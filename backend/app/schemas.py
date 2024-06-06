@@ -62,7 +62,7 @@ class CaseBase(BaseModel):
     end_time: datetime
 
 class CaseCreate(CaseBase):
-    case_id: int
+    pass
 
 class Case(CaseBase):
     case_id: int
@@ -76,7 +76,7 @@ class BlockBase(BaseModel):
     source: str
 
 class BlockCreate(BlockBase):
-    block_id: int
+    pass
 
 class Block(BlockBase):
     block_id: int
@@ -92,7 +92,7 @@ class PIIIdentificationRecordBase(BaseModel):
     redacted_text: str
 
 class PIIIdentificationRecordCreate(PIIIdentificationRecordBase):
-    pir_id: int
+    pass
 
 class PIIIdentificationRecord(PIIIdentificationRecordBase):
     pir_id: int
@@ -107,7 +107,7 @@ class BlockRuleScoreBase(BaseModel):
     rules_match: List[int]
 
 class BlockRuleScoreCreate(BlockRuleScoreBase):
-    bs_id: int
+    pass
 
 class BlockRuleScore(BlockRuleScoreBase):
     bs_id: int

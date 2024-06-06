@@ -26,7 +26,7 @@ class RuleGroupEntityMap(Base):
 
 class Case(Base):
     __tablename__ = "cases"
-    case_id = Column(Integer, primary_key=True, index=True)
+    case_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     case_name = Column(String, index=True)
     case_description = Column(String)
     start_time = Column(DateTime)
@@ -34,23 +34,23 @@ class Case(Base):
 
 class Block(Base):
     __tablename__ = "block"
-    block_id = Column(Integer, primary_key=True, index=True)
+    block_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     block_name = Column(String, index=True)
     case_id = Column(Integer, ForeignKey("cases.case_id"))
     source = Column(String)
 
 class PIIIdentificationRecord(Base):
     __tablename__ = "pii_identification_record"
-    pir_id = Column(Integer, primary_key=True, index=True)
+    pir_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     record_id = Column(Integer)
     block_id = Column(Integer, ForeignKey("block.block_id"))
     case_id = Column(Integer, ForeignKey("cases.case_id"))
-    entity_id = Column(Integer, ForeignKey("pii_entities.entity_id"))
+    entity_id = Column(ARRAY(Integer), ForeignKey("pii_entities.entity_id"))
     redacted_text = Column(String)
 
 class BlockRuleScore(Base):
     __tablename__ = "block_rule_score"
-    bs_id = Column(Integer, primary_key=True, index=True)
+    bs_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     case_id = Column(Integer, ForeignKey("cases.case_id"))
     block_id = Column(Integer, ForeignKey("block.block_id"))
     score = Column(Integer)
