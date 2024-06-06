@@ -20,7 +20,7 @@ class Rule(Base):
 
 class RuleGroupEntityMap(Base):
     __tablename__ = "rule_group_entity_map"
-    map_id = Column(Integer, primary_key=True, index=True)
+    map_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     rule_id = Column(Integer, ForeignKey("rules.rule_id"))
     entity_id = Column(Integer, ForeignKey("rules.entity_id"))
 
