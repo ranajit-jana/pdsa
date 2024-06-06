@@ -68,12 +68,18 @@ def create_case(db: Session, case: schemas.CaseCreate):
     db.refresh(db_case)
     return db_case
 
+def get_cases(db: Session, skip: int = 0, limit: int = 100, map: str = None):
+    return db.query(models.Case).offset(skip).limit(limit).all()
+
 def create_block(db: Session, block: schemas.BlockCreate):
     db_block = models.Block(**block.dict())
     db.add(db_block)
     db.commit()
     db.refresh(db_block)
     return db_block
+
+def get_blocks(db: Session, skip: int = 0, limit: int = 100, map: str = None):
+    return db.query(models.Block).offset(skip).limit(limit).all()
 
 def create_pii_identification_record(db: Session, record: schemas.PIIIdentificationRecordCreate):
     db_record = models.PIIIdentificationRecord(**record.dict())
@@ -82,9 +88,15 @@ def create_pii_identification_record(db: Session, record: schemas.PIIIdentificat
     db.refresh(db_record)
     return db_record
 
+def get_pir(db: Session, skip: int = 0, limit: int = 100, map: str = None):
+    return db.query(models.PIIIdentificationRecord).offset(skip).limit(limit).all()
+
 def create_block_rule_score(db: Session, score: schemas.BlockRuleScoreCreate):
     db_score = models.BlockRuleScore(**score.dict())
     db.add(db_score)
     db.commit()
     db.refresh(db_score)
     return db_score
+
+def get_brs(db: Session, skip: int = 0, limit: int = 100, map: str = None):
+    return db.query(models.BlockRuleScore).offset(skip).limit(limit).all()

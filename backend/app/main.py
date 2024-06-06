@@ -69,14 +69,40 @@ def read_rule_group_entity_map(skip: int = 0, limit: int = 100, map: str = None,
 def create_case(case: schemas.CaseCreate, db: Session = Depends(get_db)):
     return crud.create_case(db, case)
 
+@app.get("/api/case", response_model=list[schemas.Case])
+def read_case(skip: int = 0, limit: int = 100, map: str = None, db: Session = Depends(get_db)):
+    cases = crud.get_cases(db, skip, limit, map)
+    return cases
+
 @app.post("/api/block")
 def create_block(block: schemas.BlockCreate, db: Session = Depends(get_db)):
     return crud.create_block(db, block)
+
+@app.get("/api/block", response_model=list[schemas.Block])
+def read_block(skip: int = 0, limit: int = 100, map: str = None, db: Session = Depends(get_db)):
+    blocks = crud.get_blocks(db, skip, limit, map)
+    return blocks
 
 @app.post("/api/pii_identification_record")
 def create_pii_identification_record(record: schemas.PIIIdentificationRecordCreate, db: Session = Depends(get_db)):
     return crud.create_pii_identification_record(db, record)
 
-@app.post("/api/block_rule_score")
+@app.get("/api/pii_identification_record", response_model=list[schemas.PIIIdentificationRecord])
+def read_pir(skip: int = 0, limit: int = 100, map: str = None, db: Session = Depends(get_db)):
+    pirs = crud.get_pir(db, skip, limit, map)
+    return pirs
+
+@app.post("/api/block_rule_score", response_model=schemas.BlockRuleScoreCreate)
 def create_block_rule_score(score: schemas.BlockRuleScoreCreate, db: Session = Depends(get_db)):
-    return crud.create_block_rule_score(db, score)
+    logging.debug(f"Received request: {score}")
+    try:
+        db_score = crud.create_block_rule_score(db, score)
+        return db_score
+    except Exception as e:
+        logging.error(f"Error creating block rule score: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
+@app.get("/api/block_rule_score", response_model=list[schemas.BlockRuleScore])
+def read_brs(skip: int = 0, limit: int = 100, map: str = None, db: Session = Depends(get_db)):
+    brs = crud.get_brs(db, skip, limit, map)
+    return brs

@@ -54,4 +54,4 @@ class BlockRuleScore(Base):
     case_id = Column(Integer, ForeignKey("cases.case_id"))
     block_id = Column(Integer, ForeignKey("block.block_id"))
     score = Column(Integer)
-    rules_match = Column(ARRAY(Integer))
+    rules_match = Column(ARRAY(Integer), ForeignKey("rules.rule_id"))
