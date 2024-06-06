@@ -88,7 +88,7 @@ class PIIIdentificationRecordBase(BaseModel):
     record_id: int
     block_id: int
     case_id: int
-    entity_id: int
+    entity_id: List[int]
     redacted_text: str
 
 class PIIIdentificationRecordCreate(PIIIdentificationRecordBase):
@@ -114,3 +114,5 @@ class BlockRuleScore(BlockRuleScoreBase):
 
     class Config:
         orm_mode = True
+
+

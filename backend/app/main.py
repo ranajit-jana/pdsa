@@ -60,9 +60,10 @@ def update_rule(rule_id: int, rule: schemas.RuleUpdate, db: Session = Depends(ge
         raise HTTPException(status_code=404, detail="Rule not found")
     return db_rule
 
-@app.post("/api/rule_group_entity_map")
-def create_rule_group_entity_map(map: schemas.RuleGroupEntityMapCreate, db: Session = Depends(get_db)):
-    return crud.create_rule_group_entity_map(db, map)
+@app.get("/api/rule_group_entity_map", response_model=list[schemas.RuleGroupEntityMap])
+def read_rule_group_entity_map(skip: int = 0, limit: int = 100, map: str = None, db: Session = Depends(get_db)):
+    rule_group_entity_maps = crud.get_rule_group_entity_map(db, skip, limit, map)
+    return rule_group_entity_maps
 
 @app.post("/api/case")
 def create_case(case: schemas.CaseCreate, db: Session = Depends(get_db)):

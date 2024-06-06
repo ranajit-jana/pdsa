@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, ARRAY
 from app import models
 from app import schemas
 import logging
@@ -57,13 +58,8 @@ def update_rule(db: Session, rule_id: int, rule: schemas.RuleUpdate):
         db.rollback()
         raise HTTPException(status_code=422, detail=str(e))
 
-
-def create_rule_group_entity_map(db: Session, map: schemas.RuleGroupEntityMapCreate):
-    db_map = models.RuleGroupEntityMap(**map.dict())
-    db.add(db_map)
-    db.commit()
-    db.refresh(db_map)
-    return db_map
+def get_rule_group_entity_map(db: Session, skip: int = 0, limit: int = 100, map: str = None):
+    return db.query(models.RuleGroupEntityMap).offset(skip).limit(limit).all()
 
 def create_case(db: Session, case: schemas.CaseCreate):
     db_case = models.Case(**case.dict())
