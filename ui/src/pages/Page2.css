@@ -1,0 +1,13 @@
+/* Page2.css */
+.ant-form-item {
+    margin-bottom: 8px; /* Decrease the space between form items */
+  }
+  
+  .ant-btn {
+    margin-right: 10px;
+  }
+  
+  .ant-row {
+    margin-bottom: 8px; /* Decrease the space between rows */
+  }
+  
