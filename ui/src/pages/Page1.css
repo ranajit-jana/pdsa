@@ -1,0 +1,14 @@
+/* Add this CSS to your Page1.css file or any global CSS file */
+
+.ant-form-item {
+    margin-bottom: 16px; /* Adjust the margin between form items */
+  }
+  
+  .ant-table {
+    margin-top: 16px; /* Adjust the margin between the form and the table */
+  }
+  
+  .ant-table-pagination {
+    margin-top: 16px; /* Adjust the margin between the table and the pagination */
+  }
+  

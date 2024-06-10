@@ -1,0 +1,12 @@
+/* src/layout/MainLayout.css */
+
+.layout {
+    min-height: 100vh;
+  }
+  
+  .site-layout-content {
+    background: #fff;
+    padding: 24px;
+    min-height: 280px;
+  }
+  
