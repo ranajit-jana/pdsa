@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { Form, Input, Button, Select, Table, Row, Col } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Form, Input, Button, Select, Table, Row, Col, message } from 'antd';
+import { getRules, createRule, updateRule, getPIIEntities } from '../api'; // Import API methods
 import './Page2.css';
 
 const { Option } = Select;
@@ -8,23 +9,109 @@ const { TextArea } = Input;
 const Page2 = () => {
   const [form] = Form.useForm();
   const [dataSource, setDataSource] = useState([]);
+  const [entityOptions, setEntityOptions] = useState([]);
+  const [selectedRecordKey, setSelectedRecordKey] = useState(null);
+  const [entityMap, setEntityMap] = useState({}); // Create a state to hold the mapping of entity IDs to names
 
-  const handleFinish = (values) => {
-    setDataSource([
-      ...dataSource,
-      {
-        key: dataSource.length,
-        ruleName: values.rule_name,
-        combination: values.entity_names.join(', '),
-        description: values.rule_description,
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const [rulesData, entitiesData] = await Promise.all([getRules(), getPIIEntities()]);
+
+      // Create a mapping of entity IDs to entity names
+      const entityMap = {};
+      entitiesData.forEach(entity => {
+        entityMap[entity.entity_id] = entity.entity_name;
+      });
+      setEntityMap(entityMap);
+
+      setDataSource(rulesData.map((item) => ({
+        key: item.rule_id, // Ensure this matches the unique identifier from the API
+        ruleName: item.rule_name,
+        combination: Array.isArray(item.entity_names) ? item.entity_names.map(id => entityMap[id]).join(', ') : '',
+        description: item.rule_description,
+        score: item.rule_score,
+      })));
+
+      setEntityOptions(entitiesData.map(entity => ({
+        value: entity.entity_id,
+        label: entity.entity_name
+      })));
+
+    } catch (error) {
+      message.error('Failed to fetch data');
+      console.error('Fetch Error:', error);
+    }
+  };
+
+  const handleFinish = async (values) => {
+    try {
+      const payload = {
+        rule_name: values.rule_name,
+        entity_ids: values.entity_names,
+        rule_description: values.rule_description,
         score: values.rule_score,
-      },
-    ]);
-    form.resetFields();
+        rule_category: values.rule_category, // Include this field
+      };
+
+      if (selectedRecordKey !== null) {
+        // Update existing rule
+        const updatedRule = await updateRule(selectedRecordKey, payload);
+
+        const updatedDataSource = dataSource.map((record) =>
+          record.key === selectedRecordKey
+            ? {
+              ...record,
+              ruleName: updatedRule.rule_name,
+              combination: Array.isArray(updatedRule.entity_ids) ? updatedRule.entity_ids.map(id => entityMap[id]).join(', ') : '',
+              description: updatedRule.rule_description,
+              score: updatedRule.rule_score,
+            }
+            : record
+        );
+        setDataSource(updatedDataSource);
+        message.success('Rule updated successfully');
+      } else {
+        // Create new rule
+        const newRule = await createRule(payload);
+
+        setDataSource([
+          ...dataSource,
+          {
+            key: newRule.rule_id, // Ensure this matches the unique identifier from the API
+            ruleName: newRule.rule_name,
+            combination: Array.isArray(newRule.entity_ids) ? newRule.entity_ids.map(id => entityMap[id]).join(', ') : '',
+            description: newRule.rule_description,
+            score: newRule.rule_score,
+          },
+        ]);
+        message.success('Rule created successfully');
+      }
+      form.resetFields();
+      setSelectedRecordKey(null);
+    } catch (error) {
+      message.error('Failed to save rule');
+      console.error('Save Error:', error);
+    }
   };
 
   const handleCancel = () => {
     form.resetFields();
+    setSelectedRecordKey(null);
+  };
+
+  const handleEdit = (key) => {
+    const record = dataSource.find((item) => item.key === key);
+    form.setFieldsValue({
+      rule_name: record.ruleName,
+      rule_description: record.description,
+      rule_score: record.score,
+      entity_names: record.combination.split(', ').map(name => Object.keys(entityMap).find(key => entityMap[key] === name)),
+    });
+    setSelectedRecordKey(key);
   };
 
   const columns = [
@@ -58,17 +145,6 @@ const Page2 = () => {
       ),
     },
   ];
-
-  const handleEdit = (key) => {
-    const record = dataSource.find((item) => item.key === key);
-    form.setFieldsValue({
-      rule_name: record.ruleName,
-      rule_description: record.description,
-      rule_score: record.score,
-      entity_names: record.combination.split(', '),
-    });
-    setDataSource(dataSource.filter((item) => item.key !== key));
-  };
 
   return (
     <div>
@@ -130,9 +206,9 @@ const Page2 = () => {
               rules={[{ required: true, message: 'Please select entity names!' }]}
             >
               <Select mode="multiple" placeholder="Select entity names">
-                <Option value="Entity1">Entity1</Option>
-                <Option value="Entity2">Entity2</Option>
-                <Option value="Entity3">Entity3</Option>
+                {entityOptions.map(option => (
+                  <Option key={option.value} value={option.value}>{option.label}</Option>
+                ))}
               </Select>
             </Form.Item>
           </Col>

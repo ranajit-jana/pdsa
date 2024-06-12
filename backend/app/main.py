@@ -1,32 +1,27 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import SessionLocal, engine
-from app import models
-from app import crud
-from app import schemas
-import logging
-from fastapi import FastAPI
+from app import models, crud, schemas
 from fastapi.middleware.cors import CORSMiddleware
+import logging
 
 app = FastAPI()
 
-# Allow all origins for simplicity, you can restrict this to your frontend domain
+# CORS settings
 origins = [
     "http://localhost:3000",  # React dev server
-    # "https://your-production-domain.com",
+    # Add other origins if necessary
 ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["*"], 
     allow_headers=["*"],
 )
 
 models.Base.metadata.create_all(bind=engine)
-
-app = FastAPI()
 
 # Initialize logger
 logging.basicConfig(level=logging.INFO)
