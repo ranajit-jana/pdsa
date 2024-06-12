@@ -11,17 +11,17 @@
 
     For Windows
 
-        ```
-        python3 -m venv venv
-        venv\Scripts\activate
-        ```
+    ```
+    python3 -m venv venv
+    venv\Scripts\activate
+    ```
 
     for Linux
-    
-        ```
-        python3 -m venv venv
-        source venv/bin/activate
-        ```
+
+    ```
+    python3 -m venv venv
+    source venv/bin/activate
+    ```
 
 4.  To install all the dependencies
 
