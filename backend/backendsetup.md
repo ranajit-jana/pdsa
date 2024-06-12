@@ -1,15 +1,12 @@
 ### Setup Virtual Environment
-1.  To install the nexessary libraries
-    run `pip install fastapi uvicorn sqlalchemy psycopg2`
-
-3.  Make sure you have virtual environment in your system
+1.  Make sure you have virtual environment in your system
     else
     run `pip install virtualenv`
 
-4.  Navigate to `backend` folder
+2.  Navigate to `backend` folder
     run `virtualenv venv`
 
-5.  activate virtual environment
+2.  activate virtual environment
 
     For Windows
 
@@ -25,7 +22,7 @@
     source venv/bin/activate
     ```
 
-6.  To install all the dependencies
+4.  To install all the dependencies
 
     [all dependencies in requirements.txt](requirements.txt)
 
@@ -34,14 +31,16 @@
     ```
     pip install -r requirements.txt
     ```
+5. To install the nexessary libraries
+    run `pip install fastapi uvicorn sqlalchemy psycopg2`
 
-7.  verify installation
+6.  verify installation
 
     ```
     pip list
     ```
 
-8.  If you want to deactivate the virutal environment
+7.  If you want to deactivate the virutal environment
     run
     ```
     deactivate
