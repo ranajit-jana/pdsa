@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, Select, Table, message } from 'antd';
-import { createPIIEntity, getPIIEntities, updatePIIEntity } from '../api'; // Import API methods
+import { getPIIEntities, updatePIIEntity } from '../api'; // Import API methods
 import './Page1.css';
 
 const { Option } = Select;
@@ -11,6 +11,7 @@ const Page1 = () => {
   const [dataSource, setDataSource] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedRecordKey, setSelectedRecordKey] = useState(null);
+  const [entityOptions, setEntityOptions] = useState([]);
 
   const fetchPIIEntities = async () => {
     try {
@@ -19,13 +20,17 @@ const Page1 = () => {
 
       // Ensure that the id field exists in the entities
       const formattedEntities = entities.map((entity) => ({
-        key: entity.entity_id, // Assuming the entity object has an 'id' field
+        key: entity.entity_id,
         entity: entity.entity_name,
         description: entity.entity_description,
         category: entity.entity_category,
       }));
 
       setDataSource(formattedEntities);
+
+      // Set entity options for Select component
+      setEntityOptions(entities.map(entity => ({ value: entity.entity_id, label: entity.entity_name })));
+
       setLoading(false);
     } catch (error) {
       message.error('Failed to load PII entities');
@@ -58,24 +63,6 @@ const Page1 = () => {
         setDataSource(updatedDataSource);
         setSelectedRecordKey(null); // Reset selected record key after update
         message.success('PII entity updated successfully');
-      } else {
-        // Create new entity
-        const newEntity = await createPIIEntity({
-          entity_name: values.entity_name,
-          entity_description: values.entity_description,
-          entity_category: values.entity_category,
-        });
-
-        setDataSource([
-          ...dataSource,
-          {
-            key: newEntity.entity_id, // Ensure the key is the id of the new entity
-            entity: newEntity.entity_name,
-            description: newEntity.entity_description,
-            category: newEntity.entity_category,
-          },
-        ]);
-        message.success('PII entity created successfully');
       }
       form.resetFields();
     } catch (error) {
@@ -107,13 +94,11 @@ const Page1 = () => {
     {
       title: 'Action',
       key: 'action',
-      render: (_, record) => {
-        return (
-          <Button type="link" onClick={() => handleEdit(record.key)}>
-            Edit
-          </Button>
-        );
-      },
+      render: (_, record) => (
+        <Button type="link" onClick={() => handleEdit(record.key)}>
+          Edit
+        </Button>
+      ),
     },
   ];
 
@@ -139,20 +124,10 @@ const Page1 = () => {
           name="entity_name"
           rules={[{ required: true, message: 'Please select an entity name!' }]}
         >
-          <Select placeholder="Select an entity name" disabled={selectedRecordKey !== null}>
-            <Option value="ENTITY_NAME">ENTITY_NAME</Option>
-            <Option value="PERSON">PERSON</Option>
-            <Option value="PHONE_NUMBER">PHONE_NUMBER</Option>
-            <Option value="EMAIL_ADDRESS">EMAIL_ADDRESS</Option>
-            <Option value="ADDRESS">ADDRESS</Option>
-            <Option value="AADHAR">AADHAR</Option>
-            <Option value="BANK_ACCOUNT">BANK_ACCOUNT</Option>
-            <Option value="CREDIT_CARD">CREDIT_CARD</Option>
-            <Option value="CREDIT_CARD_CVV">CREDIT_CARD_CVV</Option>
-            <Option value="CREDIT_CARD_EXPIRY_DATE">CREDIT_CARD_EXPIRY_DATE</Option>
-            <Option value="DATE_OF_BIRTH">DATE_OF_BIRTH</Option>
-            <Option value="MOTHERS_MAIDEN_NAME">MOTHERS_MAIDEN_NAME</Option>
-            <Option value="PAN_NUMBER">PAN_NUMBER</Option>
+          <Select placeholder="Select an entity name" disabled>
+            {entityOptions.map(option => (
+              <Option key={option.value} value={option.value}>{option.label}</Option>
+            ))}
           </Select>
         </Form.Item>
         <Form.Item
@@ -160,7 +135,7 @@ const Page1 = () => {
           name="entity_category"
           rules={[{ required: true, message: 'Please select an entity category!' }]}
         >
-          <Select placeholder="Select an entity category">
+          <Select placeholder="Select an entity category" disabled={selectedRecordKey === null}>
             <Option value="Category1">Category1</Option>
             <Option value="Category2">Category2</Option>
             <Option value="Category3">Category3</Option>
@@ -171,10 +146,10 @@ const Page1 = () => {
           name="entity_description"
           rules={[{ required: true, message: 'Please enter a description!' }]}
         >
-          <TextArea rows={2} placeholder="Enter description" />
+          <TextArea rows={2} placeholder="Enter description" disabled={selectedRecordKey === null} />
         </Form.Item>
         <Form.Item>
-          <Button type="primary" htmlType="submit">
+          <Button type="primary" htmlType="submit" disabled={selectedRecordKey === null}>
             Submit
           </Button>
           <Button style={{ marginLeft: '10px' }} onClick={handleCancel}>
