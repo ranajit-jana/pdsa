@@ -74,7 +74,7 @@ sudo apt install python3-dev libpq-dev
     Enter Database Name: pdsa
     .env file updated successfully.
     ```
-
+    If this step is not run the DB env will not be set
 
 8. To run the command
 

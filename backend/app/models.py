@@ -2,6 +2,8 @@ from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, ARRAY
 from sqlalchemy.orm import relationship
 from app.database import Base
 
+
+
 class PIIEntity(Base):
     __tablename__ = "pii_entities"
     entity_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
@@ -18,11 +20,12 @@ class Rule(Base):
     score = Column(Integer)
     entity_id = Column(Integer, ForeignKey("pii_entities.entity_id"))
 
+
 class RuleGroupEntityMap(Base):
     __tablename__ = "rule_group_entity_map"
     map_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     rule_id = Column(Integer, ForeignKey("rules.rule_id"))
-    entity_id = Column(Integer, ForeignKey("rules.entity_id"))
+    entity_id = Column(Integer, ForeignKey("pii_entities.entity_id"))
 
 class Case(Base):
     __tablename__ = "cases"
