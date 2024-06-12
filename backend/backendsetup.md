@@ -25,6 +25,8 @@
 
 4.  To install all the dependencies
 
+    [all dependencies in requirements.txt](requirements.txt)
+
     run
 
     ```
