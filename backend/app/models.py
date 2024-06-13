@@ -7,7 +7,7 @@ from app.database import Base
 class PIIEntity(Base):
     __tablename__ = "pii_entities"
     entity_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    entity_name = Column(String, index=True)
+    entity_name = Column(String, unique=True, index=True)
     entity_description = Column(String)
     entity_category = Column(String)
 

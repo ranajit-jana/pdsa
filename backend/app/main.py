@@ -56,9 +56,14 @@ def seed_data():
     ]
 
     # Insert seed data into the session
-    session.bulk_save_objects(seed_entities)
-    session.commit()
-    session.close()
+    try:
+        session.bulk_save_objects(seed_entities)
+        session.commit()
+    except IntegrityError:
+        session.rollback()
+        logger.info("Seed data already exists or there was an integrity error.")
+    finally:
+        session.close()
 
 # Seed the data when the application starts
 seed_data()
