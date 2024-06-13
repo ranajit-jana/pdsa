@@ -167,9 +167,9 @@ const Page2 = () => {
               rules={[{ required: true, message: 'Please select a rule category!' }]}
             >
               <Select placeholder="Select a rule category">
-                <Option value="Category1">Category1</Option>
-                <Option value="Category2">Category2</Option>
-                <Option value="Category3">Category3</Option>
+                <Option value="ID">Identity</Option>
+                <Option value="FI">Financial</Option>
+                <Option value="PR">Personal</Option>
               </Select>
             </Form.Item>
           </Col>
