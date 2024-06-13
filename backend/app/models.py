@@ -48,7 +48,7 @@ class PIIIdentificationRecord(Base):
     record_id = Column(Integer, nullable=False)
     block_id = Column(Integer, nullable=False)
     case_id = Column(Integer, nullable=False)
-    entity_id = Column(ARRAY(Integer), nullable=False)  # Define as ARRAY of Integer
+    entity_name = Column(ARRAY(String), nullable=False)  # Define as ARRAY of Integer
     redacted_text = Column(String, nullable=False)
 
 class BlockRuleScore(Base):
