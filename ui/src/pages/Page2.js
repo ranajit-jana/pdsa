@@ -148,7 +148,7 @@ const Page2 = () => {
 
   return (
     <div>
-      <h2>PII Detection and Toxicity Analyzer</h2>
+      <h2>Rules</h2>
       <Form form={form} layout="vertical" onFinish={handleFinish}>
         <Row gutter={16}>
           <Col span={12}>

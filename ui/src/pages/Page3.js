@@ -65,7 +65,7 @@ const Page3 = () => {
 
   return (
     <div>
-      <h2>PII Detection and Sensitive Analyzer</h2>
+      <h2>Sensitivity Score for Scheduled Runs</h2>
       <Form form={form} layout="vertical" onFinish={handleFinish}>
         <Form.Item
           label="Entity Name"
