@@ -104,7 +104,7 @@ class BlockRuleScoreBase(BaseModel):
     case_id: int
     block_id: int
     score: int
-    rules_match: List[int]
+    rules_match: int
 
 class BlockRuleScoreCreate(BlockRuleScoreBase):
     pass

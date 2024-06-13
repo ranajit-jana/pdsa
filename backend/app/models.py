@@ -2,6 +2,8 @@ from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, ARRAY
 from sqlalchemy.orm import relationship
 from app.database import Base
 
+
+
 class PIIEntity(Base):
     __tablename__ = "pii_entities"
     entity_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
@@ -18,11 +20,12 @@ class Rule(Base):
     score = Column(Integer)
     entity_id = Column(Integer, ForeignKey("pii_entities.entity_id"))
 
+
 class RuleGroupEntityMap(Base):
     __tablename__ = "rule_group_entity_map"
     map_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     rule_id = Column(Integer, ForeignKey("rules.rule_id"))
-    entity_id = Column(Integer, ForeignKey("rules.entity_id"))
+    entity_id = Column(Integer, ForeignKey("pii_entities.entity_id"))
 
 class Case(Base):
     __tablename__ = "cases"
@@ -45,7 +48,7 @@ class PIIIdentificationRecord(Base):
     record_id = Column(Integer, nullable=False)
     block_id = Column(Integer, nullable=False)
     case_id = Column(Integer, nullable=False)
-    entity_id = Column(ARRAY(Integer), nullable=False)  # Define as ARRAY of Integer
+    entity_name = Column(ARRAY(String), nullable=False)  # Define as ARRAY of Integer
     redacted_text = Column(String, nullable=False)
 
 class BlockRuleScore(Base):
@@ -54,4 +57,4 @@ class BlockRuleScore(Base):
     case_id = Column(Integer, ForeignKey("cases.case_id"))
     block_id = Column(Integer, ForeignKey("block.block_id"))
     score = Column(Integer)
-    rules_match = Column(ARRAY(Integer), ForeignKey("rules.rule_id"))
+    rules_match = Column(Integer, ForeignKey("rules.rule_id"))
