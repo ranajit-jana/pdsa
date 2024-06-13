@@ -16,9 +16,9 @@ function getItem(label, key, icon, children, path) {
 }
 
 const items = [
-  getItem('Page 1', '1', <PieChartOutlined />, null, '/Page1'),
-  getItem('Page 2', '2', <DesktopOutlined />, null, '/Page2'),
-  getItem('Page 3', '3', <UserOutlined />, null, '/Page3'),
+  getItem('Entities', '1', <PieChartOutlined />, null, '/Page1'),
+  getItem('Rules', '2', <DesktopOutlined />, null, '/Page2'),
+  getItem('Score', '3', <UserOutlined />, null, '/Page3'),
 ];
 
 const Navbar = () => {
