@@ -34,6 +34,41 @@ def get_db():
     finally:
         db.close()
 
+
+# Function to seed data
+def seed_data():
+    session = SessionLocal()
+
+    # Define your seed data
+    seed_entities = [
+        models.PIIEntity(entity_name="PERSON", entity_description="Full name of the person", entity_category="Personal"),
+        models.PIIEntity(entity_name="PHONE_NUMBER", entity_description="Contact phone number", entity_category="Contact"),
+        models.PIIEntity(entity_name="EMAIL_ADDRESS", entity_description="Email address", entity_category="Contact"),
+        models.PIIEntity(entity_name="AADHAAR", entity_description="Unique Identification Number of India", entity_category="Identification"),
+        models.PIIEntity(entity_name="ADDRESS", entity_description="Residential address of Person", entity_category="Location"),
+        models.PIIEntity(entity_name="BANK_ACCOUNT", entity_description="Bank account number", entity_category="Financial"),
+        models.PIIEntity(entity_name="CREDIT_CARD", entity_description="Credit card number", entity_category="Financial"),
+        models.PIIEntity(entity_name="CREDIT_CARD_CVV", entity_description="Credit card CVV number", entity_category="Financial"),
+        models.PIIEntity(entity_name="CREDIT_CARD_EXPIRY_DATE", entity_description="Credit card expiry date", entity_category="Financial"),
+        models.PIIEntity(entity_name="DATE_OF_BIRTH", entity_description="Date of birth", entity_category="Personal"),
+        models.PIIEntity(entity_name="MOTHERS_MAIDEN_NAME", entity_description="Mother's maiden name", entity_category="Personal"),
+        models.PIIEntity(entity_name="PAN_NUMBER", entity_description="Permanent Account Number of Inda", entity_category="Identification")
+    ]
+
+    # Insert seed data into the session
+    try:
+        session.bulk_save_objects(seed_entities)
+        session.commit()
+    except IntegrityError:
+        session.rollback()
+        logger.info("Seed data already exists or there was an integrity error.")
+    finally:
+        session.close()
+
+# Seed the data when the application starts
+seed_data()
+
+
 @app.post("/api/pii_entity/", response_model=schemas.PIIEntity)
 def create_pii_entity(entity: schemas.PIIEntityCreate, db: Session = Depends(get_db)):
     try:
