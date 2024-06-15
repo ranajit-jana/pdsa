@@ -32,12 +32,23 @@ class RuleBase(BaseModel):
     score: int
 
 
-class RuleCreate(RuleBase):
-    mapping_data: List[int]
+class RuleCreate(BaseModel):
+    rule_name: str
+    rule_description: str
+    rule_category: str
+    score: int
+    entity_ids: List[int]
 
-
-class RuleResponse(RuleBase):
+class RuleResponse(BaseModel):
     rule_id: int
+    rule_name: str
+    rule_description: str
+    rule_category: str
+    score: int
+
+    class Config:
+        orm_mode = True
+
 
 
 class RuleUpdate(BaseModel):

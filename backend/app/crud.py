@@ -46,25 +46,34 @@ def create_rule(db: Session, rule: schemas.RuleCreate):
     return db_rule
 
 
-def create_rule_and_mapping(db: Session, rule_data: dict, mapping_data: list):
+def create_rule_and_mapping(db: Session, rule_data: dict, entity_ids: list):
     try:
         # Create new Rule
-        new_rule = Rule(**rule_data)
+        new_rule = models.Rule(**rule_data)
+        print(f" Rule as in create_rule_and_mapping {new_rule}")
         db.add(new_rule)
         db.commit()
         db.refresh(new_rule)
 
         # Add mappings
-        for entity_id in mapping_data:
+        for entity_id in entity_ids:
             new_mapping = models.RuleGroupEntityMap(
                 rule_id=new_rule.rule_id, entity_id=entity_id
             )
+            print(f"New mapping inside create_rule_and_mapping {entity_id}")
             db.add(new_mapping)
 
         # Commit the transaction
         db.commit()
         db.refresh(new_rule)
-        return new_rule
+        return {
+            "rule_id": new_rule.rule_id,
+            "rule_name": new_rule.rule_name,
+            "rule_description": new_rule.rule_description,
+            "rule_category": new_rule.rule_category,
+            "score": new_rule.score,
+            "entity_ids": entity_ids
+        }
 
     except SQLAlchemyError as e:
         db.rollback()

@@ -157,9 +157,13 @@ def update_pii_entity(
 def create_rule(rule_create: schemas.RuleCreate, db: Session = Depends(get_db)):
     try:
         print(rule_create.dict())
-        rule_data = rule_create.dict(exclude_unset=True)
-        mapping_data = rule_data.pop("mapping_data", [])
-        return crud.create_rule_and_mapping(db, rule_data, mapping_data)
+        rule_data = rule_create.dict(exclude={"entity_ids"})
+        print(f"Rule Data \n {rule_data}")
+        entity_ids = rule_create.entity_ids
+        print(f"Entity Ids {entity_ids}")
+        new_rule = crud.create_rule_and_mapping(db, rule_data, entity_ids)
+        return new_rule
+
     except ValidationError as e:
         print(e.json())  # Print validation errors
         raise HTTPException(status_code=422, detail=e.errors())
