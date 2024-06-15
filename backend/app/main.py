@@ -98,7 +98,14 @@ def update_pii_entity(entity_id: int, entity: schemas.PIIEntityUpdate, db: Sessi
 
 @app.post("/api/rule/", response_model=schemas.Rule)
 def create_rule(rule: schemas.RuleCreate, db: Session = Depends(get_db)):
-    return crud.create_rule(db, rule)
+    try:
+        print(rule.dict())
+        return crud.create_rule(db, rule)
+    except ValidationError as e:
+        print(e.json())  # Print validation errors
+        raise HTTPException(status_code=422, detail=e.errors())
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 @app.get("/api/rules/", response_model=list[schemas.Rule])
 def read_rules(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
