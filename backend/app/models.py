@@ -3,13 +3,13 @@ from sqlalchemy.orm import relationship
 from app.database import Base
 
 
-
 class PIIEntity(Base):
     __tablename__ = "pii_entities"
     entity_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     entity_name = Column(String, unique=True, index=True)
     entity_description = Column(String)
     entity_category = Column(String)
+
 
 class Rule(Base):
     __tablename__ = "rules"
@@ -20,12 +20,14 @@ class Rule(Base):
     score = Column(Integer)
     rule_group_entity_maps = relationship("RuleGroupEntityMap", back_populates="rule")
 
+
 class RuleGroupEntityMap(Base):
     __tablename__ = "rule_group_entity_map"
     map_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     rule_id = Column(Integer, ForeignKey("rules.rule_id"))
     entity_id = Column(Integer, ForeignKey("pii_entities.entity_id"))
     rule = relationship("Rule", back_populates="rule_group_entity_maps")
+
 
 class Case(Base):
     __tablename__ = "cases"
@@ -35,12 +37,14 @@ class Case(Base):
     start_time = Column(DateTime)
     end_time = Column(DateTime)
 
+
 class Block(Base):
     __tablename__ = "block"
     block_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     block_name = Column(String, index=True)
     case_id = Column(Integer, ForeignKey("cases.case_id"))
     source = Column(String)
+
 
 class PIIIdentificationRecord(Base):
     __tablename__ = "pii_identification_record"
@@ -51,6 +55,7 @@ class PIIIdentificationRecord(Base):
     source = Column(String, nullable=False)
     entity_name = Column(ARRAY(String), nullable=False)  # Define as ARRAY of string
     redacted_text = Column(String)
+
 
 class BlockRuleScore(Base):
     __tablename__ = "block_rule_score"
