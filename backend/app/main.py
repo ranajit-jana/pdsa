@@ -1,5 +1,5 @@
 from sqlalchemy.exc import IntegrityError
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.orm import Session
 from app.database import SessionLocal, engine
 from app import models, crud, schemas
@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import logging
 from fastapi.encoders import jsonable_encoder
 from pydantic import ValidationError
+from scorecalculator.scorecalculator import score_processing
 
 app = FastAPI()
 
@@ -135,16 +136,22 @@ def read_block(skip: int = 0, limit: int = 100, map: str = None, db: Session = D
     return blocks
 
 @app.post("/api/pii_identification_record")
-def create_pii_identification_record(record: schemas.PIIIdentificationRecordCreate, db: Session = Depends(get_db)):
+def create_pii_identification_record(
+    record: schemas.PIIIdentificationRecordCreate, 
+    db: Session = Depends(get_db),
+    background_tasks: BackgroundTasks = None):
     try:
-        print(record.dict())
-        return crud.create_pii_identification_record(db, record)
+        print({key: record.dict()[key] for key in ['source','entity_name']})
+        db_record = crud.create_pii_identification_record(db, record)
+        background_tasks.add_task(score_processing, db_record)
+        return db_record
+        
     except ValidationError as e:
         print(e.json())  # Print validation errors
         raise HTTPException(status_code=422, detail=e.errors())
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-    #return crud.create_pii_identification_record(db, record)
+
 
 @app.get("/api/pii_identification_record", response_model=list[schemas.PIIIdentificationRecord])
 def read_pir(skip: int = 0, limit: int = 100, map: str = None, db: Session = Depends(get_db)):
