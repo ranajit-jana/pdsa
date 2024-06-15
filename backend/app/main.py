@@ -6,7 +6,7 @@ from app import models, crud, schemas
 from fastapi.middleware.cors import CORSMiddleware
 import logging
 from fastapi.encoders import jsonable_encoder
-
+from pydantic import ValidationError
 
 app = FastAPI()
 
@@ -136,7 +136,15 @@ def read_block(skip: int = 0, limit: int = 100, map: str = None, db: Session = D
 
 @app.post("/api/pii_identification_record")
 def create_pii_identification_record(record: schemas.PIIIdentificationRecordCreate, db: Session = Depends(get_db)):
-    return crud.create_pii_identification_record(db, record)
+    try:
+        print(record.dict())
+        return crud.create_pii_identification_record(db, record)
+    except ValidationError as e:
+        print(e.json())  # Print validation errors
+        raise HTTPException(status_code=422, detail=e.errors())
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    #return crud.create_pii_identification_record(db, record)
 
 @app.get("/api/pii_identification_record", response_model=list[schemas.PIIIdentificationRecord])
 def read_pir(skip: int = 0, limit: int = 100, map: str = None, db: Session = Depends(get_db)):
