@@ -45,11 +45,12 @@ class Block(Base):
 class PIIIdentificationRecord(Base):
     __tablename__ = "pii_identification_record"
     pir_id = Column(Integer, primary_key=True, autoincrement=True)
-    record_id = Column(Integer, nullable=False)
-    block_id = Column(Integer, nullable=False)
-    case_id = Column(Integer, nullable=False)
-    entity_name = Column(ARRAY(String), nullable=False)  # Define as ARRAY of Integer
-    redacted_text = Column(String, nullable=False)
+    record_id = Column(String, nullable=False)
+    block_id = Column(String, nullable=False)
+    case_id = Column(String, nullable=False)
+    source = Column(String, nullable=False)
+    entity_name = Column(ARRAY(String), nullable=False)  # Define as ARRAY of string
+    redacted_text = Column(String)
 
 class BlockRuleScore(Base):
     __tablename__ = "block_rule_score"

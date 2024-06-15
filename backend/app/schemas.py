@@ -85,10 +85,11 @@ class Block(BlockBase):
         orm_mode = True
 
 class PIIIdentificationRecordBase(BaseModel):
-    record_id: int
-    block_id: int
-    case_id: int
-    entity_id: List[int]
+    record_id: str
+    block_id: str
+    case_id: str
+    source: str
+    entity_name: List[str]
     redacted_text: str
 
 class PIIIdentificationRecordCreate(PIIIdentificationRecordBase):

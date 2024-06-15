@@ -1,9 +1,12 @@
+from sqlalchemy.exc import IntegrityError
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import SessionLocal, engine
 from app import models, crud, schemas
 from fastapi.middleware.cors import CORSMiddleware
 import logging
+from fastapi.encoders import jsonable_encoder
+
 
 app = FastAPI()
 
@@ -52,7 +55,7 @@ def seed_data():
         models.PIIEntity(entity_name="CREDIT_CARD_EXPIRY_DATE", entity_description="Credit card expiry date", entity_category="Financial"),
         models.PIIEntity(entity_name="DATE_OF_BIRTH", entity_description="Date of birth", entity_category="Personal"),
         models.PIIEntity(entity_name="MOTHERS_MAIDEN_NAME", entity_description="Mother's maiden name", entity_category="Personal"),
-        models.PIIEntity(entity_name="PAN_NUMBER", entity_description="Permanent Account Number of Inda", entity_category="Identity")
+        models.PIIEntity(entity_name="PAN_NUMBER", entity_description="Permanent Account Number of India", entity_category="Identity")
     ]
 
     # Insert seed data into the session
