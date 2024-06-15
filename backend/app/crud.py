@@ -60,9 +60,12 @@ def create_rule_and_mapping(db: Session, rule_data: dict, entity_ids: list):
             new_mapping = models.RuleGroupEntityMap(
                 rule_id=new_rule.rule_id, entity_id=entity_id
             )
-            print(f"New mapping inside create_rule_and_mapping {entity_id}")
+            print(f"New mapping inside create_rule_and_mapping {new_rule.rule_id} {entity_id}")
             db.add(new_mapping)
 
+        # Verify that mappings were added
+        mappings = db.query(models.RuleGroupEntityMap).filter_by(rule_id=new_rule.rule_id).all()
+        print(f"Mappings after commit: {mappings}")
         # Commit the transaction
         db.commit()
         db.refresh(new_rule)
@@ -81,8 +84,25 @@ def create_rule_and_mapping(db: Session, rule_data: dict, entity_ids: list):
 
 
 def get_rules(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Rule).offset(skip).limit(limit).all()
-
+    rules = db.query(models.Rule).offset(skip).limit(limit).all()
+    print(f" The rules as returned {rules}")
+    result = []
+    for rule in rules:
+        print(f" One rule at a time {rule.rule_id}")
+        mappings = db.query(models.RuleGroupEntityMap).filter_by(rule_id=rule.rule_id).all()
+        print(f"Mappings to be populated {mappings}")
+        rule_with_mappings = schemas.RuleResponse(
+            rule_id=rule.rule_id,
+            rule_name=rule.rule_name,
+            rule_description=rule.rule_description,
+            rule_category=rule.rule_category,
+            score=rule.score,
+            entity_ids=[mapping.entity_id for mapping in mappings]
+        )
+        print(f"Entity list now {rule_with_mappings}")
+        print(f"Entity list now {rule_with_mappings.entity_ids}")
+        result.append(rule_with_mappings)
+    return result
 
 def update_rule(db: Session, rule_id: int, rule: schemas.RuleUpdate):
     db_rule = db.query(models.Rule).filter(models.Rule.rule_id == rule_id).first()

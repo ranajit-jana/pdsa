@@ -1,3 +1,4 @@
+from typing import List
 from sqlalchemy.exc import IntegrityError
 from fastapi import FastAPI, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.orm import Session
@@ -171,26 +172,19 @@ def create_rule(rule_create: schemas.RuleCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@app.get("/api/rules/", response_model=list[schemas.Rule])
+@app.get("/api/rules/", response_model=list[schemas.RuleWithMappings])
 def read_rules(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     rules = crud.get_rules(db, skip=skip, limit=limit)
     return rules
 
 
-@app.put("/api/rule/{rule_id}", response_model=schemas.Rule)
-def update_rule(rule_id: int, rule: schemas.RuleUpdate, db: Session = Depends(get_db)):
-    db_rule = crud.update_rule(db, rule_id, rule)
-    if db_rule is None:
-        raise HTTPException(status_code=404, detail="Rule not found")
-    return db_rule
+# @app.put("/api/rule/{rule_id}", response_model=schemas.Rule)
+# def update_rule(rule_id: int, rule: schemas.RuleUpdate, db: Session = Depends(get_db)):
+#     db_rule = crud.update_rule(db, rule_id, rule)
+#     if db_rule is None:
+#         raise HTTPException(status_code=404, detail="Rule not found")
+#     return db_rule
 
-
-@app.get("/api/rule_group_entity_map", response_model=list[schemas.RuleGroupEntityMap])
-def read_rule_group_entity_map(
-    skip: int = 0, limit: int = 100, map: str = None, db: Session = Depends(get_db)
-):
-    rule_group_entity_maps = crud.get_rule_group_entity_map(db, skip, limit, map)
-    return rule_group_entity_maps
 
 
 @app.post("/api/case")
