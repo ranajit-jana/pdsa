@@ -203,15 +203,6 @@ def read_block(skip: int = 0, limit: int = 100, map: str = None, db: Session = D
 # Initialize router
 router = APIRouter()
 
-# Endpoint for PII Identification Record
-@router.post("/pii_identification_record/", response_model=schemas.PIIIdentificationRecordResponse)
-def create_pii_identification_record(record: schemas.PIIIdentificationRecordCreate, db: Session = Depends(get_db)):
-    db_record = models.PIIIdentificationRecord(**record.dict())
-    db.add(db_record)
-    db.commit()
-    db.refresh(db_record)
-    return db_record
-
 @app.get("/api/pii_identification_record", response_model=List[schemas.PIIIdentificationRecordBase])
 def read_pir(skip: int = 0, limit: int = 100, map: str = None, db: Session = Depends(get_db)):
     pirs = crud.get_pir(db, skip, limit, map)
@@ -223,8 +214,8 @@ def match_rule(entities_detected, rule_entities):
     """
     return set(entities_detected).issuperset(set(rule_entities))
 
-@router.post("/end_block/", response_model=dict)
-def end_block_processing(record: schemas.PIIIdentificationRecordCreate, db: Session = Depends(get_db)):
+@router.post("/pii_identification_record", response_model=dict)
+def process_block(record: schemas.PIIIdentificationRecordCreate, db: Session = Depends(get_db)):
     # 1. Insert into pii_identification_record table
     db_record = models.PIIIdentificationRecord(**record.dict())
     db.add(db_record)
@@ -236,26 +227,30 @@ def end_block_processing(record: schemas.PIIIdentificationRecordCreate, db: Sess
     # 2. Fetch rules from the database
     rules = crud.get_rules(db)
 
-    # Placeholder list for matched rules
-    matched_rules = []
+    # Placeholder for formatted matched rule names
+    formatted_matched_rules = []
 
     # 3. Perform rules matching logic
     for rule in rules:
         if match_rule(entities_detected, rule.entities):
-            matched_rules.append(rule.rule_id)
+            # Format the rule name as desired
+            formatted_rule_name = rule.rule_name.replace('_', ' ')
+            formatted_matched_rules.append(formatted_rule_name)
+
+    # Join formatted matched rule names into a single string
+    joined_matched_rules = ", ".join(formatted_matched_rules)
 
     # 4. Insert into block_rule_score table
-    for rule_id in matched_rules:
-        block_rule_score = models.BlockRuleScore(
-            block_id=record.block_hash,  # Assuming block_hash is used as block_id
-            case_id=record.case_hash,  # Assuming case_hash is used as case_id
-            source="some_source",
-            score=len(entities_detected),
-            rules_match=rule_id
-        )
-        db.add(block_rule_score)
-
+    block_rule_score = models.BlockRuleScore(
+        block_hash=record.block_hash,
+        case_hash=record.case_hash,
+        source=record.source,
+        score=len(entities_detected),
+        rules_match=joined_matched_rules
+    )
+    db.add(block_rule_score)
     db.commit()
+
     return {"status": "success"}
 
 @app.post("/api/block_rule_score", response_model=schemas.BlockRuleScoreCreate)

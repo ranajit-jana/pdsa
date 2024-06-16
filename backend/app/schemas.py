@@ -123,15 +123,14 @@ class PIIIdentificationRecordResponse(PIIIdentificationRecordBase):
 
 
 class BlockRuleScoreBase(BaseModel):
-    case_id: int
-    block_id: int
+    case_hash: int
+    block_hash: int
     score: int
-    rules_match: int
-
+    rules_match: List[str]
+    source: str
 
 class BlockRuleScoreCreate(BlockRuleScoreBase):
     pass
-
 
 class BlockRuleScore(BlockRuleScoreBase):
     bs_id: int
