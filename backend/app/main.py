@@ -154,36 +154,18 @@ def update_pii_entity(
     return db_entity
 
 
-@app.post("/api/rule/", response_model=schemas.RuleCreate)
-def create_rule(rule_create: schemas.RuleCreate, db: Session = Depends(get_db)):
-    try:
-        print(rule_create.dict())
-        rule_data = rule_create.dict(exclude={"entity_ids"})
-        print(f"Rule Data \n {rule_data}")
-        entity_ids = rule_create.entity_ids
-        print(f"Entity Ids {entity_ids}")
-        new_rule = crud.create_rule_and_mapping(db, rule_data, entity_ids)
-        return new_rule
+@app.post("/api/rule/", response_model=schemas.RuleResponse)
+def create_rule(rule: schemas.RuleCreate, db: Session = Depends(get_db)):
+    return crud.create_rule(db=db, rule=rule)
 
-    except ValidationError as e:
-        print(e.json())  # Print validation errors
-        raise HTTPException(status_code=422, detail=e.errors())
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-
-@app.get("/api/rules/", response_model=list[schemas.RuleWithMappings])
+@app.get("/api/rules/", response_model=List[schemas.RuleResponse])
 def read_rules(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     rules = crud.get_rules(db, skip=skip, limit=limit)
     return rules
 
-
-# @app.put("/api/rule/{rule_id}", response_model=schemas.Rule)
-# def update_rule(rule_id: int, rule: schemas.RuleUpdate, db: Session = Depends(get_db)):
-#     db_rule = crud.update_rule(db, rule_id, rule)
-#     if db_rule is None:
-#         raise HTTPException(status_code=404, detail="Rule not found")
-#     return db_rule
+@app.put("/api/rule/{rule_id}", response_model=schemas.RuleResponse)
+def update_rule(rule_id: int, rule: schemas.RuleUpdate, db: Session = Depends(get_db)):
+    return crud.update_rule(db=db, rule_id=rule_id, rule=rule)
 
 
 

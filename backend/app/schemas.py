@@ -25,59 +25,30 @@ class PIIEntity(PIIEntityBase):
         orm_mode = True
 
 
-class RuleGroupEntityMapBase(BaseModel):
-    entity_id: int
-
-    class Config:
-        orm_mode = True
 
 class RuleBase(BaseModel):
     rule_name: str
     rule_description: str
     rule_category: str
     score: int
+    entity_ids: List[str]
 
 class RuleCreate(RuleBase):
-    entity_ids: List[int]
+    pass
 
 class RuleResponse(RuleBase):
     rule_id: int
-    entity_ids: List[int]
 
     class Config:
         orm_mode = True
-
-class RuleWithMappings(RuleResponse):
-    entity_ids: List[int]
 
 
 class RuleUpdate(BaseModel):
-    rule_description: str
-    rule_category: str
-    score: int
-
-
-class Rule(RuleBase):
-    rule_id: int
-
-    class Config:
-        orm_mode = True
-
-
-class RuleGroupEntityMapBase(BaseModel):
-    rule_id: int
-    entity_id: int
-
-
-class RuleGroupEntityMapCreate(RuleGroupEntityMapBase):
-    map_id: int
-
-
-class RuleGroupEntityMap(RuleGroupEntityMapBase):
-    map_id: int
-
-    class Config:
-        orm_mode = True
+    rule_name: Optional[str] = None
+    rule_description: Optional[str] = None
+    rule_category: Optional[str] = None
+    score: Optional[int] = None
+    entity_ids: Optional[List[str]] = None
 
 
 class CaseBase(BaseModel):
