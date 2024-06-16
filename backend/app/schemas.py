@@ -24,8 +24,6 @@ class PIIEntity(PIIEntityBase):
     class Config:
         orm_mode = True
 
-
-
 class RuleBase(BaseModel):
     rule_name: str
     rule_description: str
@@ -44,10 +42,13 @@ class RuleResponse(RuleBase):
 
 
 class RuleUpdate(BaseModel):
-    rule_description: str
-    rule_category: str
-    score: int
-    entities: List[str]
+    rule_description: Optional[str] = None
+    score: Optional[int] = None
+    rule_category: Optional[str] = None
+    entities: Optional[List[str]] = None
+
+    class Config:
+        orm_mode = True
 
 class Rule(RuleBase):
     rule_id: int
@@ -63,7 +64,6 @@ class RuleGroupEntityMapCreate(RuleGroupEntityMapBase):
     map_id: int
 
 class RuleGroupEntityMap(RuleGroupEntityMapBase):
-    map_id: int
 
     class Config:
         orm_mode = True

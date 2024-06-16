@@ -173,14 +173,13 @@ def read_rules(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
 
 @app.put("/api/rule/{rule_id}", response_model=schemas.RuleResponse)
 def update_rule(rule_id: int, rule: schemas.RuleUpdate, db: Session = Depends(get_db)):
-    print(f"Received rule: %s", rule.dict())
+    print(f"Received rule: {rule.dict()}")
     print(f" The ID passed is {rule_id}")
     return crud.update_rule(db=db, rule_id=rule_id, rule=rule)
 
-
 @app.get("/api/rule_group_entity_map", response_model=List[schemas.RuleGroupEntityMap])
-def read_rule_group_entity_map(skip: int = 0, limit: int = 100, map: str = None, db: Session = Depends(get_db)):
-    rule_group_entity_maps = crud.get_rule_group_entity_map(db, skip, limit, map)
+def read_rule_group_entity_map(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    rule_group_entity_maps = crud.get_rule_group_entity_map(db, skip=skip, limit=limit)
     return rule_group_entity_maps
 
 @app.post("/api/case", response_model=schemas.Case)
