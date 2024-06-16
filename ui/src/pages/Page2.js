@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Button, Select, Table, Row, Col, message } from 'antd';
+import { Form, Input, Button, Select, Table, Row, Col, message, Tag } from 'antd';
 import { getRules, createRule, updateRule, getPIIEntities } from '../api'; // Import API methods
 import './Page2.css';
 
@@ -36,7 +36,7 @@ const Page2 = () => {
         return {
           key: item.rule_id,
           ruleName: item.rule_name,
-          combination: combination,
+          entities: item.entities, // Make sure entities are correctly populated here
           description: item.rule_description,
           score: item.score,
           rule_category: item.rule_category,
@@ -57,104 +57,62 @@ const Page2 = () => {
     }
   };
 
-
   const handleFinish = async (values) => {
     try {
-      // Map entity names to their corresponding entity IDs
-      const entityIds = await Promise.all(
-        values.entity_names.map(async (name) => {
-          const entity = await getPIIEntities(name);
-          return entity.entity_id;
-        })
-      );
+      // Map selected entity names from entityOptions to values.entity_names
+      const selectedEntityNames = values.entity_names.map(name => {
+        const option = entityOptions.find(option => option.label === name);
+        return option ? option.label : null;
+      }).filter(name => name !== null);
   
       // Create the payload object
       const payload = {
         rule_name: values.rule_name,
-        entity_id: entityIds, // Use the array of entity IDs
+        entities: selectedEntityNames, // Use the selected entity names
         rule_description: values.rule_description,
         score: values.rule_score,
         rule_category: values.rule_category,
       };
-      console.log(selectedRecordKey)
-      // Check if editing an existing rule or creating a new one
-      if (selectedRecordKey !== null) {
-        // Update existing rule
-        const updatedRule = await updateRule(selectedRecordKey, payload);
   
-        // Update the dataSource with the updated rule
-        const updatedDataSource = dataSource.map((record) =>
-          record.key === selectedRecordKey
-            ? {
-                ...record,
-                ruleName: updatedRule.rule_name,
-                combination: Array.isArray(updatedRule.entity_id)
-                  ? updatedRule.entity_id
-                      .map((id) => entityMap[id])
-                      .join(", ")
-                  : "",
-                description: updatedRule.rule_description,
-                category: updatedRule.rule_category,
-                score: updatedRule.score,
-              }
-            : record
-        );
-        setDataSource(updatedDataSource);
-        message.success("Rule updated successfully");
-      } else {
-        // Create new rule
-        const newRule = await createRule(payload);
+      // Create new rule
+      await createRule(payload);
   
-        // Update the dataSource with the new rule
-        setDataSource([
-          ...dataSource,
-          {
-            key: newRule.rule_id,
-            ruleName: newRule.rule_name,
-            combination: Array.isArray(newRule.entity_id)
-              ? newRule.entity_id.map((id) => entityMap[id]).join(", ")
-              : "",
-            description: newRule.rule_description,
-            score: newRule.score,
-            rule_category: newRule.rule_category, // Add rule category
-            entity_id: newRule.entity_id, // Add entity IDs
-          },
-        ]);
-        message.success("Rule created successfully");
-      }
+      // Refetch rules data to get the latest data
+      fetchData();
+  
+      message.success('Rule created successfully');
   
       // Reset form fields and selectedRecordKey
       form.resetFields();
       setSelectedRecordKey(null);
     } catch (error) {
-      message.error("Failed to save rule");
-      console.error("Save Error:", error);
+      message.error('Failed to save rule');
+      console.error('Save Error:', error);
     }
   };
   
+
   const handleCancel = () => {
     form.resetFields();
     setSelectedRecordKey(null);
   };
 
   const handleEdit = async (key) => {
+    console.log(key);
     try {
-      const record = dataSource.find((item) => item.key === key);
-      const entities = await getPIIEntities();
-      
-      const entityNames = record.entity_id.map(id => {
-        const entity = entities.find(entity => entity.entity_id === id);
-        return entity ? entity.entity_name : null;
-      });
-      
-      console.log(entityNames);
-      
+      const record = dataSource.find((item) => item.key === key); // Assuming 'key' is the rule_id
+      if (!record) {
+        // If record is not found, display an error message
+        message.error('Rule not found');
+        return;
+      }
+
       form.setFieldsValue({
         rule_name: record.ruleName,
         rule_description: record.description,
         rule_score: record.score,
         rule_category: record.rule_category,
-        entity_names: entityNames, // Set entity names instead of entity IDs
+        entity_names: record.entities, // Set entity names instead of entity IDs
       });
       setSelectedRecordKey(key);
     } catch (error) {
@@ -165,14 +123,21 @@ const Page2 = () => {
 
   const columns = [
     {
-      title: 'Rule Name',
+      title: 'Rule name',
       dataIndex: 'ruleName',
       key: 'ruleName',
     },
     {
-      title: 'Combination',
-      dataIndex: 'combination',
-      key: 'combination',
+      title: 'Entities',
+      dataIndex: 'entities',
+      key: 'entities',
+      render: entities => (
+        <>
+          {Array.isArray(entities) && entities.map(entity => (
+            <Tag key={entity}>{entity}</Tag>
+          ))}
+        </>
+      ),
     },
     {
       title: 'Description',
@@ -194,7 +159,6 @@ const Page2 = () => {
       ),
     },
   ];
-
 
   return (
     <div>
@@ -257,7 +221,7 @@ const Page2 = () => {
             >
               <Select mode="multiple" placeholder="Select entity names">
                 {entityOptions.map(option => (
-                  <Option key={option.value} value={option.value}>{option.label}</Option>
+                  <Option key={option.label} value={option.label}>{option.label}</Option>
                 ))}
               </Select>
             </Form.Item>
