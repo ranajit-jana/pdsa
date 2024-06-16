@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # Prompt the user for input
-read -p "Enter Database User: " DATABASE_USER
-read -sp "Enter Database Password: " DATABASE_PASSWORD
+read -p "Enter Database User: " DB_USERNAME
+read -sp "Enter Database Password: " DB_PASSWORD
 echo
-read -p "Enter Database Host: " DATABASE_HOST
-read -p "Enter Database Name: " DATABASE_NAME
+read -p "Enter Database Host: " DB_HOSTNAME
+read -p "Enter Database Name: " DB_NAME
 
 # Create .env file if it doesn't exist
 if [ ! -f .env ]; then
@@ -13,14 +13,14 @@ if [ ! -f .env ]; then
 fi
 
 # Update or add variables in the .env file
-sed -i "/^DATABASE_USER=/d" .env
-sed -i "/^DATABASE_PASSWORD=/d" .env
-sed -i "/^DATABASE_HOST=/d" .env
-sed -i "/^DATABASE_NAME=/d" .env
+sed -i "/^DB_USERNAME=/d" .env
+sed -i "/^DB_PASSWORD=/d" .env
+sed -i "/^DB_HOSTNAME=/d" .env
+sed -i "/^DB_NAME=/d" .env
 
-echo "DATABASE_USER=$DATABASE_USER" >> .env
-echo "DATABASE_PASSWORD=$DATABASE_PASSWORD" >> .env
-echo "DATABASE_HOST=$DATABASE_HOST" >> .env
-echo "DATABASE_NAME=$DATABASE_NAME" >> .env
+echo "DB_USERNAME=$DB_USERNAME" >> .env
+echo "DB_PASSWORD=$DB_PASSWORD" >> .env
+echo "DB_HOSTNAME=$DB_HOSTNAME" >> .env
+echo "DB_NAME=$DB_NAME" >> .env
 
 echo ".env file updated successfully."

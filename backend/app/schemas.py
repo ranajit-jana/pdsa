@@ -31,7 +31,7 @@ class RuleBase(BaseModel):
     rule_description: str
     rule_category: str
     score: int
-    entity_ids: List[int]
+    entities: List[str]
 
 class RuleCreate(RuleBase):
     pass
@@ -44,12 +44,29 @@ class RuleResponse(RuleBase):
 
 
 class RuleUpdate(BaseModel):
-    rule_name: Optional[str] = None
-    rule_description: Optional[str] = None
-    rule_category: Optional[str] = None
-    score: Optional[int] = None
-    entity_ids: Optional[List[str]] = None
+    rule_description: str
+    rule_category: str
+    score: int
+    entities: List[str]
 
+class Rule(RuleBase):
+    rule_id: int
+
+    class Config:
+        orm_mode = True
+
+class RuleGroupEntityMapBase(BaseModel):
+    rule_id: int
+    entities: List[str]
+
+class RuleGroupEntityMapCreate(RuleGroupEntityMapBase):
+    map_id: int
+
+class RuleGroupEntityMap(RuleGroupEntityMapBase):
+    map_id: int
+
+    class Config:
+        orm_mode = True
 
 class CaseBase(BaseModel):
     case_name: str
@@ -87,19 +104,18 @@ class Block(BlockBase):
 
 
 class PIIIdentificationRecordBase(BaseModel):
-    record_id: str
-    block_id: str
-    case_id: str
+    record_id: int
+    block_hash: int
+    case_hash: int
     source: str
-    entity_name: List[str]
+    entities_detected: List[str]
     redacted_text: str
 
 
 class PIIIdentificationRecordCreate(PIIIdentificationRecordBase):
     pass
 
-
-class PIIIdentificationRecord(PIIIdentificationRecordBase):
+class PIIIdentificationRecordResponse(PIIIdentificationRecordBase):
     pir_id: int
 
     class Config:
