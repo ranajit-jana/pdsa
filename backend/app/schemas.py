@@ -2,23 +2,29 @@ from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
 
+
 class PIIEntityBase(BaseModel):
     entity_name: str
     entity_description: str
     entity_category: str
 
+
 class PIIEntityCreate(PIIEntityBase):
     pass
+
 
 class PIIEntityUpdate(BaseModel):
     entity_description: str
     entity_category: str
+
 
 class PIIEntity(PIIEntityBase):
     entity_id: int
 
     class Config:
         orm_mode = True
+
+
 
 class RuleBase(BaseModel):
     rule_name: str
@@ -29,6 +35,13 @@ class RuleBase(BaseModel):
 
 class RuleCreate(RuleBase):
     pass
+
+class RuleResponse(RuleBase):
+    rule_id: int
+
+    class Config:
+        orm_mode = True
+
 
 class RuleUpdate(BaseModel):
     rule_description: str
@@ -61,8 +74,10 @@ class CaseBase(BaseModel):
     start_time: datetime
     end_time: datetime
 
+
 class CaseCreate(CaseBase):
     pass
+
 
 class Case(CaseBase):
     case_id: int
@@ -70,13 +85,16 @@ class Case(CaseBase):
     class Config:
         orm_mode = True
 
+
 class BlockBase(BaseModel):
     block_name: str
     case_id: int
     source: str
 
+
 class BlockCreate(BlockBase):
     pass
+
 
 class Block(BlockBase):
     block_id: int
@@ -84,12 +102,15 @@ class Block(BlockBase):
     class Config:
         orm_mode = True
 
+
 class PIIIdentificationRecordBase(BaseModel):
     record_id: int
     block_hash: int
     case_hash: int
+    source: str
     entities_detected: List[str]
     redacted_text: str
+
 
 class PIIIdentificationRecordCreate(PIIIdentificationRecordBase):
     pass
@@ -100,19 +121,20 @@ class PIIIdentificationRecordResponse(PIIIdentificationRecordBase):
     class Config:
         orm_mode = True
 
+
 class BlockRuleScoreBase(BaseModel):
     case_id: int
     block_id: int
     score: int
     rules_match: int
 
+
 class BlockRuleScoreCreate(BlockRuleScoreBase):
     pass
+
 
 class BlockRuleScore(BlockRuleScoreBase):
     bs_id: int
 
     class Config:
         orm_mode = True
-
-

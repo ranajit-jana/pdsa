@@ -16,7 +16,7 @@ const MainLayout = ({ children }) => {
         <Header style={{ padding: 0, background: "#001529" }}>
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <div style={{ color: '#fff', fontSize: '20px', marginLeft: '16px' }}>
-              PDSA
+              PII Detection and Sensitivity Analyzer (PDSA)
             </div>
           </div>
         </Header>

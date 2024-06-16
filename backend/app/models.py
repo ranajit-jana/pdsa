@@ -6,9 +6,10 @@ from sqlalchemy.dialects.postgresql import ARRAY
 class PIIEntity(Base):
     __tablename__ = "pii_entities"
     entity_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    entity_name = Column(String, index=True)
+    entity_name = Column(String, unique=True, index=True)
     entity_description = Column(String)
     entity_category = Column(String)
+
 
 class Rule(Base):
     __tablename__ = 'rules'
@@ -33,6 +34,7 @@ class Case(Base):
     start_time = Column(DateTime)
     end_time = Column(DateTime)
 
+
 class Block(Base):
     __tablename__ = "block"
     block_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
@@ -40,12 +42,14 @@ class Block(Base):
     case_id = Column(Integer, ForeignKey("cases.case_id"))
     source = Column(String)
 
+
 class PIIIdentificationRecord(Base):
     __tablename__ = "pii_identification_record"
     pir_id = Column(Integer, primary_key=True, autoincrement=True)
     record_id = Column(Integer, nullable=False)
     block_hash = Column(Integer)
     case_hash = Column(Integer)
+    source = Column(String, nullable=False)
     entities_detected = Column(ARRAY(String), nullable=False)
     redacted_text = Column(String, nullable=False)
 

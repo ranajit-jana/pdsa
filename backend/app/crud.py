@@ -5,9 +5,11 @@ from app import schemas
 import logging
 from sqlalchemy.orm import Session
 from fastapi import FastAPI, Depends, HTTPException
+from sqlalchemy.exc import SQLAlchemyError
 
 # Initialize logger
 logger = logging.getLogger(__name__)
+
 
 def create_pii_entity(db: Session, entity: schemas.PIIEntityCreate):
     db_entity = models.PIIEntity(**entity.dict())
@@ -16,11 +18,17 @@ def create_pii_entity(db: Session, entity: schemas.PIIEntityCreate):
     db.refresh(db_entity)
     return db_entity
 
+
 def get_pii_entities(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.PIIEntity).offset(skip).limit(limit).all()
 
+
 def update_pii_entity(db: Session, entity_id: int, entity: schemas.PIIEntityUpdate):
-    db_entity = db.query(models.PIIEntity).filter(models.PIIEntity.entity_id == entity_id).first()
+    db_entity = (
+        db.query(models.PIIEntity)
+        .filter(models.PIIEntity.entity_id == entity_id)
+        .first()
+    )
     if not db_entity:
         return None
     db_entity.entity_description = entity.entity_description
@@ -29,8 +37,16 @@ def update_pii_entity(db: Session, entity_id: int, entity: schemas.PIIEntityUpda
     db.refresh(db_entity)
     return db_entity
 
+
+
 def create_rule(db: Session, rule: schemas.RuleCreate):
-    db_rule = models.Rule(**rule.dict())
+    db_rule = models.Rule(
+        rule_name=rule.rule_name,
+        rule_description=rule.rule_description,
+        rule_category=rule.rule_category,
+        score=rule.score,
+        entity_ids=rule.entity_ids
+    )
     db.add(db_rule)
     db.commit()
     db.refresh(db_rule)
@@ -41,25 +57,21 @@ def get_rules(db: Session, skip: int = 0, limit: int = 100):
 
 def update_rule(db: Session, rule_id: int, rule: schemas.RuleUpdate):
     db_rule = db.query(models.Rule).filter(models.Rule.rule_id == rule_id).first()
-    if not db_rule:
+    if db_rule is None:
         raise HTTPException(status_code=404, detail="Rule not found")
-    # Update rule attributes
-    if rule.rule_description:
-        db_rule.rule_description = rule.rule_description
-    if rule.rule_category:
-        db_rule.rule_category = rule.rule_category
-    if rule.score:
-        db_rule.score = rule.score
-    try:
-        db.commit()
-        db.refresh(db_rule)
-        return db_rule
-    except Exception as e:
-        db.rollback()
-        raise HTTPException(status_code=422, detail=str(e))
+    update_data = rule.dict(exclude_unset=True)
+    for key, value in update_data.items():
+        setattr(db_rule, key, value)
+    db.commit()
+    db.refresh(db_rule)
+    return db_rule
 
-def get_rule_group_entity_map(db: Session, skip: int = 0, limit: int = 100, map: str = None):
+
+def get_rule_group_entity_map(
+    db: Session, skip: int = 0, limit: int = 100, map: str = None
+):
     return db.query(models.RuleGroupEntityMap).offset(skip).limit(limit).all()
+
 
 def create_case(db: Session, case: schemas.CaseCreate):
     db_case = models.Case(**case.dict())
@@ -68,8 +80,10 @@ def create_case(db: Session, case: schemas.CaseCreate):
     db.refresh(db_case)
     return db_case
 
+
 def get_cases(db: Session, skip: int = 0, limit: int = 100, map: str = None):
     return db.query(models.Case).offset(skip).limit(limit).all()
+
 
 def create_block(db: Session, block: schemas.BlockCreate):
     db_block = models.Block(**block.dict())
@@ -78,18 +92,24 @@ def create_block(db: Session, block: schemas.BlockCreate):
     db.refresh(db_block)
     return db_block
 
+
 def get_blocks(db: Session, skip: int = 0, limit: int = 100, map: str = None):
     return db.query(models.Block).offset(skip).limit(limit).all()
 
-def create_pii_identification_record(db: Session, record: schemas.PIIIdentificationRecordCreate):
+
+def create_pii_identification_record(
+    db: Session, record: schemas.PIIIdentificationRecordCreate
+):
     db_record = models.PIIIdentificationRecord(**record.dict())
     db.add(db_record)
     db.commit()
     db.refresh(db_record)
     return db_record
 
+
 def get_pir(db: Session, skip: int = 0, limit: int = 100, map: str = None):
     return db.query(models.PIIIdentificationRecord).offset(skip).limit(limit).all()
+
 
 def create_block_rule_score(db: Session, score: schemas.BlockRuleScoreCreate):
     db_score = models.BlockRuleScore(**score.dict())
@@ -97,6 +117,7 @@ def create_block_rule_score(db: Session, score: schemas.BlockRuleScoreCreate):
     db.commit()
     db.refresh(db_score)
     return db_score
+
 
 def get_brs(db: Session, skip: int = 0, limit: int = 100, map: str = None):
     return db.query(models.BlockRuleScore).offset(skip).limit(limit).all()
