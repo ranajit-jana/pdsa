@@ -154,9 +154,9 @@ def update_pii_entity(
     return db_entity
 
 
-@app.post("/api/rule/", response_model=schemas.RuleResponse)
+@app.post("/api/rule", response_model=schemas.RuleResponse)
 def create_rule(rule: schemas.RuleCreate, db: Session = Depends(get_db)):
-    logger.debug("Received rule: %s", rule.dict())
+    print(f"Received rule: %s", rule.dict())
     try:
         created_rule = crud.create_rule(db=db, rule=rule)
         logger.debug("Created rule: %s", created_rule)
@@ -166,13 +166,15 @@ def create_rule(rule: schemas.RuleCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
-@app.get("/api/rules/", response_model=List[schemas.RuleResponse])
+@app.get("/api/rules", response_model=List[schemas.RuleResponse])
 def read_rules(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     rules = crud.get_rules(db, skip=skip, limit=limit)
     return rules
 
 @app.put("/api/rule/{rule_id}", response_model=schemas.RuleResponse)
 def update_rule(rule_id: int, rule: schemas.RuleUpdate, db: Session = Depends(get_db)):
+    print(f"Received rule: %s", rule.dict())
+    print(f" The ID passed is {rule_id}")
     return crud.update_rule(db=db, rule_id=rule_id, rule=rule)
 
 
