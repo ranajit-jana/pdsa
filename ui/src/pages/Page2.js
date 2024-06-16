@@ -28,13 +28,23 @@ const Page2 = () => {
       });
       setEntityMap(entityMap);
 
-      setDataSource(rulesData.map((item) => ({
-        key: item.rule_id, // Ensure this matches the unique identifier from the API
-        ruleName: item.rule_name,
-        combination: Array.isArray(item.entity_names) ? item.entity_names.map(id => entityMap[id]).join(', ') : '',
-        description: item.rule_description,
-        score: item.rule_score,
-      })));
+      const processedData = rulesData.map((item) => {
+        const combination = Array.isArray(item.entity_id)
+          ? item.entity_id.map(id => entityMap[id]).join(', ')
+          : '';
+
+        return {
+          key: item.rule_id,
+          ruleName: item.rule_name,
+          combination: combination,
+          description: item.rule_description,
+          score: item.score,
+          rule_category: item.rule_category,
+          entity_id: item.entity_id, // Store entity IDs for editing
+        };
+      });
+
+      setDataSource(processedData);
 
       setEntityOptions(entitiesData.map(entity => ({
         value: entity.entity_id,
@@ -47,71 +57,110 @@ const Page2 = () => {
     }
   };
 
+
   const handleFinish = async (values) => {
     try {
+      // Map entity names to their corresponding entity IDs
+      const entityIds = await Promise.all(
+        values.entity_names.map(async (name) => {
+          const entity = await getPIIEntities(name);
+          return entity.entity_id;
+        })
+      );
+  
+      // Create the payload object
       const payload = {
         rule_name: values.rule_name,
-        entity_ids: values.entity_names,
+        entity_id: entityIds, // Use the array of entity IDs
         rule_description: values.rule_description,
         score: values.rule_score,
-        rule_category: values.rule_category, // Include this field
+        rule_category: values.rule_category,
       };
-
+      console.log(selectedRecordKey)
+      // Check if editing an existing rule or creating a new one
       if (selectedRecordKey !== null) {
         // Update existing rule
         const updatedRule = await updateRule(selectedRecordKey, payload);
-
+  
+        // Update the dataSource with the updated rule
         const updatedDataSource = dataSource.map((record) =>
           record.key === selectedRecordKey
             ? {
-              ...record,
-              ruleName: updatedRule.rule_name,
-              combination: Array.isArray(updatedRule.entity_ids) ? updatedRule.entity_ids.map(id => entityMap[id]).join(', ') : '',
-              description: updatedRule.rule_description,
-              score: updatedRule.rule_score,
-            }
+                ...record,
+                ruleName: updatedRule.rule_name,
+                combination: Array.isArray(updatedRule.entity_id)
+                  ? updatedRule.entity_id
+                      .map((id) => entityMap[id])
+                      .join(", ")
+                  : "",
+                description: updatedRule.rule_description,
+                category: updatedRule.rule_category,
+                score: updatedRule.score,
+              }
             : record
         );
         setDataSource(updatedDataSource);
-        message.success('Rule updated successfully');
+        message.success("Rule updated successfully");
       } else {
         // Create new rule
         const newRule = await createRule(payload);
-
+  
+        // Update the dataSource with the new rule
         setDataSource([
           ...dataSource,
           {
-            key: newRule.rule_id, // Ensure this matches the unique identifier from the API
+            key: newRule.rule_id,
             ruleName: newRule.rule_name,
-            combination: Array.isArray(newRule.entity_ids) ? newRule.entity_ids.map(id => entityMap[id]).join(', ') : '',
+            combination: Array.isArray(newRule.entity_id)
+              ? newRule.entity_id.map((id) => entityMap[id]).join(", ")
+              : "",
             description: newRule.rule_description,
-            score: newRule.rule_score,
+            score: newRule.score,
+            rule_category: newRule.rule_category, // Add rule category
+            entity_id: newRule.entity_id, // Add entity IDs
           },
         ]);
-        message.success('Rule created successfully');
+        message.success("Rule created successfully");
       }
+  
+      // Reset form fields and selectedRecordKey
       form.resetFields();
       setSelectedRecordKey(null);
     } catch (error) {
-      message.error('Failed to save rule');
-      console.error('Save Error:', error);
+      message.error("Failed to save rule");
+      console.error("Save Error:", error);
     }
   };
-
+  
   const handleCancel = () => {
     form.resetFields();
     setSelectedRecordKey(null);
   };
 
-  const handleEdit = (key) => {
-    const record = dataSource.find((item) => item.key === key);
-    form.setFieldsValue({
-      rule_name: record.ruleName,
-      rule_description: record.description,
-      rule_score: record.score,
-      entity_names: record.combination.split(', ').map(name => Object.keys(entityMap).find(key => entityMap[key] === name)),
-    });
-    setSelectedRecordKey(key);
+  const handleEdit = async (key) => {
+    try {
+      const record = dataSource.find((item) => item.key === key);
+      const entities = await getPIIEntities();
+      
+      const entityNames = record.entity_id.map(id => {
+        const entity = entities.find(entity => entity.entity_id === id);
+        return entity ? entity.entity_name : null;
+      });
+      
+      console.log(entityNames);
+      
+      form.setFieldsValue({
+        rule_name: record.ruleName,
+        rule_description: record.description,
+        rule_score: record.score,
+        rule_category: record.rule_category,
+        entity_names: entityNames, // Set entity names instead of entity IDs
+      });
+      setSelectedRecordKey(key);
+    } catch (error) {
+      message.error('Failed to fetch entity names');
+      console.error('Fetch Error:', error);
+    }
   };
 
   const columns = [
@@ -146,6 +195,7 @@ const Page2 = () => {
     },
   ];
 
+
   return (
     <div>
       <h2>PII Detection and Toxicity Analyzer</h2>
@@ -157,7 +207,7 @@ const Page2 = () => {
               name="rule_name"
               rules={[{ required: true, message: 'Please enter a rule name!' }]}
             >
-              <Input placeholder="Enter rule name" />
+              <Input placeholder="Enter rule name" disabled={selectedRecordKey !== null} />
             </Form.Item>
           </Col>
           <Col span={12}>

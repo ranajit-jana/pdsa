@@ -1,8 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, ARRAY
 from sqlalchemy.orm import relationship
 from app.database import Base
-
-
+from sqlalchemy.dialects.postgresql import ARRAY
 
 class PIIEntity(Base):
     __tablename__ = "pii_entities"
@@ -12,20 +11,19 @@ class PIIEntity(Base):
     entity_category = Column(String)
 
 class Rule(Base):
-    __tablename__ = "rules"
-    rule_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    rule_name = Column(String, index=True)
+    __tablename__ = 'rules'
+    rule_id = Column(Integer, primary_key=True, index=True)
+    rule_name = Column(String)
     rule_description = Column(String)
-    rule_category = Column(String)  # Add this line
     score = Column(Integer)
-    entity_id = Column(Integer, ForeignKey("pii_entities.entity_id"))
-
+    rule_category = Column(String)
+    entities = Column(ARRAY(String))
 
 class RuleGroupEntityMap(Base):
     __tablename__ = "rule_group_entity_map"
     map_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     rule_id = Column(Integer, ForeignKey("rules.rule_id"))
-    entity_id = Column(Integer, ForeignKey("pii_entities.entity_id"))
+    entities = Column(ARRAY(String))
 
 class Case(Base):
     __tablename__ = "cases"
@@ -46,15 +44,16 @@ class PIIIdentificationRecord(Base):
     __tablename__ = "pii_identification_record"
     pir_id = Column(Integer, primary_key=True, autoincrement=True)
     record_id = Column(Integer, nullable=False)
-    block_id = Column(Integer, nullable=False)
-    case_id = Column(Integer, nullable=False)
-    entity_name = Column(ARRAY(String), nullable=False)  # Define as ARRAY of Integer
+    block_hash = Column(Integer)
+    case_hash = Column(Integer)
+    entities_detected = Column(ARRAY(String), nullable=False)
     redacted_text = Column(String, nullable=False)
 
 class BlockRuleScore(Base):
     __tablename__ = "block_rule_score"
     bs_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    case_id = Column(Integer, ForeignKey("cases.case_id"))
-    block_id = Column(Integer, ForeignKey("block.block_id"))
+    case_hash = Column(Integer)
+    block_hash = Column(Integer)
+    source = Column(String, nullable=False)
     score = Column(Integer)
-    rules_match = Column(Integer, ForeignKey("rules.rule_id"))
+    rules_match = Column(Integer)
