@@ -18,16 +18,7 @@ class Rule(Base):
     rule_description = Column(String)
     rule_category = Column(String)  # Add this line
     score = Column(Integer)
-    entity_ids= Column(ARRAY(String), nullable=False)
-
-
-
-
-class RuleGroupEntityMap(Base):
-    __tablename__ = "rule_group_entity_map"
-    map_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    rule_id = Column(Integer, ForeignKey("rules.rule_id"))
-    entity_id = Column(Integer, ForeignKey("pii_entities.entity_id"))
+    entity_ids= Column(ARRAY(Integer), nullable=False)
 
 
 

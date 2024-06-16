@@ -31,7 +31,7 @@ class RuleBase(BaseModel):
     rule_description: str
     rule_category: str
     score: int
-    entity_ids: List[str]
+    entity_ids: List[int]
 
 class RuleCreate(RuleBase):
     pass
