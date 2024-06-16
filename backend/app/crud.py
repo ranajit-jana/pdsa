@@ -130,7 +130,6 @@ def create_pii_identification_record(
     db.refresh(db_record)
     return db_record
 
-
 def get_pir(db: Session, skip: int = 0, limit: int = 100, map: str = None):
     return db.query(models.PIIIdentificationRecord).offset(skip).limit(limit).all()
 
@@ -145,3 +144,4 @@ def create_block_rule_score(db: Session, score: schemas.BlockRuleScoreCreate):
 
 def get_brs(db: Session, skip: int = 0, limit: int = 100, map: str = None):
     return db.query(models.BlockRuleScore).offset(skip).limit(limit).all()
+

@@ -60,4 +60,4 @@ class BlockRuleScore(Base):
     block_hash = Column(Integer)
     source = Column(String, nullable=False)
     score = Column(Integer)
-    rules_match = Column(Integer)
+    rules_match = Column(ARRAY(String))
