@@ -46,9 +46,10 @@ class Block(Base):
 class PIIIdentificationRecord(Base):
     __tablename__ = "pii_identification_record"
     pir_id = Column(Integer, primary_key=True, autoincrement=True)
-    record_id = Column(Integer, nullable=False)
-    block_hash = Column(Integer)
-    case_hash = Column(Integer)
+    record_id = Column(String, nullable=False)
+    block_hash = Column(String, nullable=False)
+    case_hash = Column(String, nullable=False)
+    case_name = Column(String, nullable=False)
     source = Column(String, nullable=False)
     entities_detected = Column(ARRAY(String), nullable=False)
     redacted_text = Column(String, nullable=False)
@@ -56,8 +57,10 @@ class PIIIdentificationRecord(Base):
 class BlockRuleScore(Base):
     __tablename__ = "block_rule_score"
     bs_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    case_hash = Column(Integer)
-    block_hash = Column(Integer)
+    block_hash = Column(String, nullable=False)
+    case_name = Column(String, nullable=False)
+    case_hash = Column(String, nullable=False)
     source = Column(String, nullable=False)
+    redacted_text = Column(String)
     score = Column(Integer)
-    rules_match = Column(ARRAY(String))
+    rules_match = Column(String, nullable=False)

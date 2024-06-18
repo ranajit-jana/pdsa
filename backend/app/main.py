@@ -214,44 +214,24 @@ def match_rule(entities_detected, rule_entities):
     """
     return set(entities_detected).issuperset(set(rule_entities))
 
-@router.post("/pii_identification_record", response_model=dict)
-def process_block(record: schemas.PIIIdentificationRecordCreate, db: Session = Depends(get_db)):
-    # 1. Insert into pii_identification_record table
-    db_record = models.PIIIdentificationRecord(**record.dict())
-    db.add(db_record)
-    db.commit()
 
-    # Entities detected from the record
-    entities_detected = record.entities_detected
+@app.post("/api/pii_identification_record")
+def create_pii_identification_record(
+    record: schemas.PIIIdentificationRecordCreate,
+    db: Session = Depends(get_db),
+    background_tasks: BackgroundTasks = None,
+):
+    try:
+        print({key: record.dict()[key] for key in ["source", "entity_name"]})
+        db_record = crud.create_pii_identification_record(db, record)
+        background_tasks.add_task(score_processing, db_record)
+        return db_record
 
-    # 2. Fetch rules from the database
-    rules = crud.get_rules(db)
-
-    # Placeholder for formatted matched rule names
-    formatted_matched_rules = []
-
-    # 3. Perform rules matching logic
-    for rule in rules:
-        if match_rule(entities_detected, rule.entities):
-            # Format the rule name as desired
-            formatted_rule_name = rule.rule_name.replace('_', ' ')
-            formatted_matched_rules.append(formatted_rule_name)
-
-    # Join formatted matched rule names into a single string
-    joined_matched_rules = ", ".join(formatted_matched_rules)
-
-    # 4. Insert into block_rule_score table
-    block_rule_score = models.BlockRuleScore(
-        block_hash=record.block_hash,
-        case_hash=record.case_hash,
-        source=record.source,
-        score=len(entities_detected),
-        rules_match=joined_matched_rules
-    )
-    db.add(block_rule_score)
-    db.commit()
-
-    return {"status": "success"}
+    except ValidationError as e:
+        print(e.json())  # Print validation errors
+        raise HTTPException(status_code=422, detail=e.errors())
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 @app.post("/api/block_rule_score", response_model=schemas.BlockRuleScoreCreate)
 def create_block_rule_score(
