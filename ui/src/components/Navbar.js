@@ -25,8 +25,7 @@ const Navbar = () => {
   const [collapsed, setCollapsed] = useState(false);
   return (
     <Sider collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}>
-      <div style={{ display: 'flex', justifyContent: 'center', padding: '16px' }}>
-        <Avatar size={64} icon={<AntDesignOutlined />} />
+      <div style={{ display: 'flex', justifyContent: 'center', padding: '30px' }}>
       </div>
       <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline" items={items} />
     </Sider>

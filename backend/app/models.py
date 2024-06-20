@@ -26,23 +26,6 @@ class RuleGroupEntityMap(Base):
     rule_id = Column(Integer, ForeignKey("rules.rule_id"))
     entities = Column(ARRAY(String))
 
-class Case(Base):
-    __tablename__ = "cases"
-    case_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    case_name = Column(String, index=True)
-    case_description = Column(String)
-    start_time = Column(DateTime)
-    end_time = Column(DateTime)
-
-
-class Block(Base):
-    __tablename__ = "block"
-    block_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    block_name = Column(String, index=True)
-    case_id = Column(Integer, ForeignKey("cases.case_id"))
-    source = Column(String)
-
-
 class PIIIdentificationRecord(Base):
     __tablename__ = "pii_identification_record"
     pir_id = Column(Integer, primary_key=True, autoincrement=True)
