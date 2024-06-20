@@ -221,17 +221,17 @@ def create_pii_identification_record(
     db: Session = Depends(get_db),
     background_tasks: BackgroundTasks = None,
 ):
+    logger.info(f"Incoming request: {record}")
     try:
-        print({key: record.dict()[key] for key in ["source", "entity_name"]})
         db_record = crud.create_pii_identification_record(db, record)
-        background_tasks.add_task(score_processing, db_record)
+        background_tasks.add_task(score_processing, db, db_record)
         return db_record
-
     except ValidationError as e:
-        print(e.json())  # Print validation errors
-        raise HTTPException(status_code=422, detail=e.errors())
+        logger.error(f"Validation error: {e}")
+        raise HTTPException(status_code=400, detail=f"Validation error: {e}")
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        logger.error(f"Unexpected error: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
 @app.post("/api/block_rule_score", response_model=schemas.BlockRuleScoreCreate)
 def create_block_rule_score(

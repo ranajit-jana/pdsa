@@ -44,31 +44,6 @@ export const getRuleGroupEntityMap = async (skip = 0, limit = 100, map = null) =
     return response.data;
 };
 
-// Case APIs
-export const getCases = async (skip = 0, limit = 100, map = null) => {
-    const params = { skip, limit };
-    if (map) params.map = map;
-    const response = await api.get('/api/case', { params });
-    return response.data;
-};
-
-export const createCase = async (data) => {
-    const response = await api.post('/api/case', data);
-    return response.data;
-};
-
-// Block APIs
-export const getBlocks = async (skip = 0, limit = 100, map = null) => {
-    const params = { skip, limit };
-    if (map) params.map = map;
-    const response = await api.get('/api/block', { params });
-    return response.data;
-};
-
-export const createBlock = async (data) => {
-    const response = await api.post('/api/block', data);
-    return response.data;
-};
 
 // PII Identification Record APIs
 export const getPIIIdentificationRecords = async (skip = 0, limit = 100, map = null) => {
@@ -78,20 +53,11 @@ export const getPIIIdentificationRecords = async (skip = 0, limit = 100, map = n
     return response.data;
 };
 
-export const createPIIIdentificationRecord = async (data) => {
-    const response = await api.post('/api/pii_identification_record', data);
-    return response.data;
-};
 
 // Block Rule Score APIs
 export const getBlockRuleScores = async (skip = 0, limit = 100, map = null) => {
     const params = { skip, limit };
     if (map) params.map = map;
     const response = await api.get('/api/block_rule_score', { params });
-    return response.data;
-};
-
-export const createBlockRuleScore = async (data) => {
-    const response = await api.post('/api/block_rule_score', data);
     return response.data;
 };

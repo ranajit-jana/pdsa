@@ -97,30 +97,6 @@ def get_rule_group_entity_map(db: Session, skip: int = 0, limit: int = 100, map:
 
     return rule_group_entity_maps
 
-def create_case(db: Session, case: schemas.CaseCreate):
-    db_case = models.Case(**case.dict())
-    db.add(db_case)
-    db.commit()
-    db.refresh(db_case)
-    return db_case
-
-
-def get_cases(db: Session, skip: int = 0, limit: int = 100, map: str = None):
-    return db.query(models.Case).offset(skip).limit(limit).all()
-
-
-def create_block(db: Session, block: schemas.BlockCreate):
-    db_block = models.Block(**block.dict())
-    db.add(db_block)
-    db.commit()
-    db.refresh(db_block)
-    return db_block
-
-
-def get_blocks(db: Session, skip: int = 0, limit: int = 100, map: str = None):
-    return db.query(models.Block).offset(skip).limit(limit).all()
-
-
 def create_pii_identification_record(
     db: Session, record: schemas.PIIIdentificationRecordCreate
 ):

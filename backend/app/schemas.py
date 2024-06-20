@@ -107,7 +107,7 @@ class PIIIdentificationRecordBase(BaseModel):
     record_id: str
     block_hash: str
     case_hash: str
-	case_name: str
+    case_name: str
     source: str
     entities_detected: List[str]
     redacted_text: str
@@ -126,11 +126,11 @@ class PIIIdentificationRecordResponse(PIIIdentificationRecordBase):
 class BlockRuleScoreBase(BaseModel):
     case_hash: str
     block_hash: str
-	case_name: str
+    case_name: str
     score: int
     rules_match: str
     source: str
-	redacted_text: str
+    redacted_text: str
 
 class BlockRuleScoreCreate(BlockRuleScoreBase):
     pass
