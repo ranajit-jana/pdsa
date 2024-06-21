@@ -1,5 +1,6 @@
 **/venv/*
 **/__pycache__/*
+__pycache__
 *.pyc
 
 # Byte-compiled / optimized / DLL files
@@ -7,7 +8,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-.env
+# Ignore .env files in any folder
+**/.env
 # C extensions
 *.so
 
