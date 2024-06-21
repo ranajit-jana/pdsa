@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Select, Table, Typography } from 'antd';
+import { Select, Table, Typography,Tag } from 'antd';
 import axios from 'axios';
 import {
   getBlockRuleScores,
@@ -43,10 +43,42 @@ const Page3 = () => {
     }
   }, [selectedCase]);  
 
+  const getScoreColor = (score) => {
+    if (score >= 0 && score <= 3) {
+      return 'black';
+    } else if (score >= 4 && score <= 6) {
+      return 'orange';
+    } else if (score >= 7 && score <= 10) {
+      return 'red';
+    }
+    return 'black'; // default color
+  };
+
   const columns = [
     { title: 'Block', dataIndex: 'source', key: 'source' },
-    { title: 'Score', dataIndex: 'score', key: 'score' },
+    {
+      title: 'Score',
+      dataIndex: 'score',
+      key: 'score',
+      render: score => (
+        <span style={{ color: getScoreColor(score) }}>
+          {score}
+        </span>
+      )
+    },
     { title: 'Rule Match', dataIndex: 'rules_match', key: 'rules_match' },
+    {
+      title: 'Rule Match',
+      dataIndex: 'rules_match',
+      key: 'rules_match',
+      render: rules_match => (
+        <>
+          {Array.isArray(rules_match) && rules_match.map(rule => (
+            <Tag key={rule}>{rule}</Tag>
+          ))}
+        </>
+      ),
+    },
   ];
 
   return (
