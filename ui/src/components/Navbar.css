@@ -1,0 +1,10 @@
+.custom-menu {
+    background-color: #f0f2f5 !important; /* Change this to your desired background color */
+    color: #000 !important; /* Change this to your desired text color */
+  }
+  
+  .custom-menu .ant-menu-item-selected {
+    background-color: #d3d3d3 !important; /* Change this to your desired selected item background color */
+    color: #000 !important; /* Change this to your desired selected item text color */
+  }
+  

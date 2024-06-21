@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Select, Table, Typography,Tag , Button} from 'antd';
-import axios from 'axios';
-import {
-  getBlockRuleScores,
-} from '../api';
+import { Select, Table, Typography, Tag } from 'antd';
+import { getBlockRuleScores } from '../api';
 
 const { Option } = Select;
-const { Title, Paragraph } = Typography;
+const { Paragraph } = Typography;
 
 const Page3 = () => {
   const [caseNames, setCaseNames] = useState([]);
@@ -21,12 +18,10 @@ const Page3 = () => {
       .then(data => {
         const uniqueCaseNames = [...new Set(data.map(item => item.case_name))];
         setCaseNames(uniqueCaseNames);
-  
-
       })
       .catch(error => console.error('Error fetching block_rule_scores:', error));
   }, []);
-  
+
   useEffect(() => {
     if (selectedCase) {
       // Fetch blocks for the selected case
@@ -35,27 +30,27 @@ const Page3 = () => {
           const filteredData = data.filter(item => item.case_name === selectedCase);
           setBlocks(filteredData);
           setTotalBlocks(filteredData.length);
-        // Calculate and display the case score total
-        const totalScore = filteredData.reduce((sum, item) => sum + item.score, 0);
-        setCaseScoreTotal(totalScore);
+          // Calculate and display the case score total for the selected case
+          const totalScore = filteredData.reduce((sum, item) => sum + item.score, 0);
+          setCaseScoreTotal(totalScore);
         })
         .catch(error => console.error('Error fetching block_rule_scores:', error));
     }
-  }, [selectedCase]);  
+  }, [selectedCase]);
 
   const getScoreColor = (score) => {
-    if (score >= 0 && score <= 3) {
-      return 'black';
-    } else if (score >= 4 && score <= 6) {
-      return 'orange';
-    } else if (score >= 7 && score <= 10) {
-      return 'red';
+    if (score >= 1 && score <= 4) {
+      return '#000000'; // black
+    } else if (score >= 5 && score <= 7) {
+      return '#FF0000'; // red
+    } else if (score >= 8 && score <= 10) {
+      return '#8B0000'; // dark red
     }
-    return 'black'; // default color
+    return '#000000'; // default color
   };
 
   const columns = [
-    { title: 'Block', dataIndex: 'source', key: 'source' },
+    { title: 'Source', dataIndex: 'source', key: 'source' },
     {
       title: 'Score',
       dataIndex: 'score',
@@ -87,7 +82,7 @@ const Page3 = () => {
   return (
     <div className="container">
       <h2>Case Overview</h2>
-      <br/>
+      <br />
       <div className="dropdown">
         <label htmlFor="caseSelect">Select Case: </label>
         <Select
@@ -102,21 +97,24 @@ const Page3 = () => {
           ))}
         </Select>
       </div>
-      <br/>
-      <br/>
+      <br />
+      <br />
       <div className="summary">
-        <Paragraph><strong>Case Score Total:</strong> {caseScoreTotal}</Paragraph>
-        <br/>
+        <Paragraph>
+          <strong>Case Score Total:</strong>
+          <span style={{ color: getScoreColor(caseScoreTotal) }}> {caseScoreTotal}</span>
+        </Paragraph>
+        <br />
         <Paragraph><strong>Case total Blocks:</strong> {totalBlocks}</Paragraph>
       </div>
-      <br/>
-      <br/>
-      <br/>
+      <br />
+      <br />
+      <br />
       <div className="table">
         <Table
           columns={columns}
           dataSource={blocks}
-          rowKey="block_hash"
+          rowKey="source" // Changed from "block_hash" to "source"
           pagination={false}
         />
       </div>

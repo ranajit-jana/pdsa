@@ -13,9 +13,9 @@ const MainLayout = ({ children }) => {
     <Layout style={{ minHeight: '100vh' }}>
       <Navbar />
       <Layout>
-        <Header style={{ padding: 0, background: "#001529" }}>
+        <Header style={{ padding: 0, background: "#ffffff" }}>
           <div style={{ display: 'flex', alignItems: 'center' }}>
-            <div style={{ color: '#fff', fontSize: '20px', marginLeft: '16px' }}>
+            <div style={{ color: '#000', fontSize: '20px', marginLeft: '16px' }}>
               PII Detection and Sensitivity Analyzer (PDSA)
             </div>
           </div>
