@@ -29,7 +29,7 @@ app.add_middleware(
 models.Base.metadata.create_all(bind=engine)
 
 # Initialize logger
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.ERROR)
 logger = logging.getLogger(__name__)
 
 

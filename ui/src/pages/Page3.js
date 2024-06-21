@@ -72,7 +72,7 @@ const Page3 = () => {
       key: 'rules_match',
       render: rules_match => {
         // Split the string into an array
-        const rulesArray = rules_match ? rules_match.split(',') : [];
+        const rulesArray = rules_match ? rules_match.replace(/[{}]/g, '').split(',') : [];
         return (
           <>
             {rulesArray.map(rule => (

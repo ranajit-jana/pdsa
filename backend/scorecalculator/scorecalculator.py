@@ -1,11 +1,35 @@
 from app import models, crud
 
 
-def match_rule(entities_detected, rule_entities):
+def match_rules(entities_detected, rules):
     """
     Check if the provided entities detected match the rule entities.
     """
-    return set(entities_detected).issuperset(set(rule_entities))
+    print(f" The entities detected {entities_detected}")
+    detected_entities_set = set(entities_detected)
+    matched_rules = []
+
+    for rule in rules:
+        rule_entities_set = set(rule.entities)
+
+        # Check if the detected entities include all entities in the rule
+        if detected_entities_set.issuperset(rule_entities_set):
+            matched_rules.append(rule)
+
+    # Filter out smaller sets if a larger set matches
+    if matched_rules:
+        max_entities_count = max(len(set(rule.entities)) for rule in matched_rules)
+        best_matches = [rule for rule in matched_rules if len(set(rule.entities)) == max_entities_count]
+        
+        # If there is more than one distinct match with the same size, return all of them
+        distinct_best_matches = []
+        for match in best_matches:
+            if not any(set(other.entities).issuperset(set(match.entities)) and set(other.entities) != set(match.entities) for other in best_matches):
+                distinct_best_matches.append(match)
+
+        return distinct_best_matches
+
+    return matched_rules
 
 
 def score_processing(db, db_record):
@@ -20,10 +44,10 @@ def score_processing(db, db_record):
     # Placeholder for formatted matched rule names
     matched_rule_names = []
 
-    # Perform rules matching logic
-    for rule in rules:
-        if match_rule(entities_detected, rule.entities):
-            matched_rule_names.append(rule.rule_name)
+    # Find the best matching rules
+    best_match_rules = match_rules(entities_detected, rules)
+    matched_rule_names = [rule.rule_name for rule in best_match_rules] if best_match_rules else []
+    highest_score = max(rule.score for rule in best_match_rules) if best_match_rules else 0
 
     # Insert into block_rule_score table
     block_rule_score = models.BlockRuleScore(
@@ -32,7 +56,7 @@ def score_processing(db, db_record):
         case_hash=db_record.case_hash,
         source=db_record.source,
         redacted_text=db_record.redacted_text,
-        score=len(entities_detected),
+        score=highest_score,
         rules_match=matched_rule_names,
     )
     db.add(block_rule_score)
