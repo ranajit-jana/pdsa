@@ -109,9 +109,21 @@ def seed_data():
         ),
     ]
 
+
+        # Define your seed data for Rule
+    seed_rules = [
+        models.Rule(rule_name='ID_SOCIAL_ENGINEERING_1', rule_description='Data collected to launch Social Engineering Attack', score=3, rule_category='Identity', entities=['PERSON', 'MOTHERS_MAIDEN_NAME', 'DATE_OF_BIRTH']),
+        models.Rule(rule_name='ID_IDENTITY_THEFT_1', rule_description='Identity theft with Aadhar number', score=4, rule_category='Identity', entities=['PERSON', 'AADHAAR']),
+        models.Rule(rule_name='ID_IDENTITY_THEFT_2', rule_description='Identity theft with PAN NUMBER', score=3, rule_category='Identity', entities=['PERSON', 'PAN_NUMBER']),
+        models.Rule(rule_name='FI_CREDIT_CARD_1', rule_description='Details of credit card which can launch fradulent credit card transaction', score=10, rule_category='Financial', entities=['CREDIT_CARD', 'CREDIT_CARD_CVV', 'CREDIT_CARD_EXPIRY_DATE']),
+        models.Rule(rule_name='FI_BANK_ACCOUNT_1', rule_description='Exposure of Bank Account Details', score=7, rule_category='Category E', entities=['BANK_ACCOUNT', 'PERSON'])
+    ]
+
+
     # Insert seed data into the session
     try:
         session.bulk_save_objects(seed_entities)
+        session.bulk_save_objects(seed_rules)
         session.commit()
     except IntegrityError:
         session.rollback()
