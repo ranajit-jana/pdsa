@@ -14,7 +14,6 @@ database_name = os.getenv("DB_NAME")
 
 # Debugging: Print the values to ensure they are loaded correctly (remove this in production)
 print(f"DB_USERNAME: {username}")
-print(f"DB_PASSWORD: {password}")
 print(f"DB_HOSTNAME: {hostname}")
 print(f"DB_NAME: {database_name}")
 
