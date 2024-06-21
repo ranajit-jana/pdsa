@@ -3,6 +3,7 @@ from sqlalchemy.orm import relationship
 from app.database import Base
 from sqlalchemy.dialects.postgresql import ARRAY
 
+
 class PIIEntity(Base):
     __tablename__ = "pii_entities"
     entity_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
@@ -12,7 +13,7 @@ class PIIEntity(Base):
 
 
 class Rule(Base):
-    __tablename__ = 'rules'
+    __tablename__ = "rules"
     rule_id = Column(Integer, primary_key=True, index=True)
     rule_name = Column(String)
     rule_description = Column(String)
@@ -20,11 +21,13 @@ class Rule(Base):
     rule_category = Column(String)
     entities = Column(ARRAY(String))
 
+
 class RuleGroupEntityMap(Base):
     __tablename__ = "rule_group_entity_map"
     map_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     rule_id = Column(Integer, ForeignKey("rules.rule_id"))
     entities = Column(ARRAY(String))
+
 
 class PIIIdentificationRecord(Base):
     __tablename__ = "pii_identification_record"
@@ -36,6 +39,7 @@ class PIIIdentificationRecord(Base):
     source = Column(String, nullable=False)
     entities_detected = Column(ARRAY(String), nullable=False)
     redacted_text = Column(String, nullable=False)
+
 
 class BlockRuleScore(Base):
     __tablename__ = "block_rule_score"

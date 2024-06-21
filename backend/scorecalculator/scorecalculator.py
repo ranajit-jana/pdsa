@@ -1,10 +1,12 @@
 from app import models, crud
 
+
 def match_rule(entities_detected, rule_entities):
     """
     Check if the provided entities detected match the rule entities.
     """
     return set(entities_detected).issuperset(set(rule_entities))
+
 
 def score_processing(db, db_record):
     """
@@ -31,7 +33,7 @@ def score_processing(db, db_record):
         source=db_record.source,
         redacted_text=db_record.redacted_text,
         score=len(entities_detected),
-        rules_match=matched_rule_names
+        rules_match=matched_rule_names,
     )
     db.add(block_rule_score)
     db.commit()

@@ -109,17 +109,56 @@ def seed_data():
         ),
     ]
 
-
-        # Define your seed data for Rule
+    # Define your seed data for Rule
     seed_rules = [
-        models.Rule(rule_name='ID_SOCIAL_ENGINEERING_1', rule_description='Data collected to launch Social Engineering Attack', score=3, rule_category='Identity', entities=['PERSON', 'MOTHERS_MAIDEN_NAME', 'DATE_OF_BIRTH']),
-        models.Rule(rule_name='ID_IDENTITY_THEFT_1', rule_description='Identity theft with Aadhar number', score=4, rule_category='Identity', entities=['PERSON', 'AADHAAR']),
-        models.Rule(rule_name='ID_IDENTITY_THEFT_2', rule_description='Identity theft with PAN NUMBER', score=3, rule_category='Identity', entities=['PERSON', 'PAN_NUMBER']),
-        models.Rule(rule_name='FI_CREDIT_CARD_1', rule_description='Details of credit card which can launch fradulent credit card transaction', score=8, rule_category='Financial', entities=['CREDIT_CARD', 'CREDIT_CARD_CVV', 'CREDIT_CARD_EXPIRY_DATE']),
-        models.Rule(rule_name='FI_CREDIT_CARD_2', rule_description='Details of credit card which can launch fradulent credit card transaction', score=10, rule_category='Financial', entities=['PERSON','CREDIT_CARD', 'CREDIT_CARD_CVV', 'CREDIT_CARD_EXPIRY_DATE']),
-        models.Rule(rule_name='FI_BANK_ACCOUNT_1', rule_description='Exposure of Bank Account Details', score=7, rule_category='Category E', entities=['BANK_ACCOUNT', 'PERSON'])
+        models.Rule(
+            rule_name="ID_SOCIAL_ENGINEERING_1",
+            rule_description="Data collected to launch Social Engineering Attack",
+            score=3,
+            rule_category="Identity",
+            entities=["PERSON", "MOTHERS_MAIDEN_NAME", "DATE_OF_BIRTH"],
+        ),
+        models.Rule(
+            rule_name="ID_IDENTITY_THEFT_1",
+            rule_description="Identity theft with Aadhar number",
+            score=4,
+            rule_category="Identity",
+            entities=["PERSON", "AADHAAR"],
+        ),
+        models.Rule(
+            rule_name="ID_IDENTITY_THEFT_2",
+            rule_description="Identity theft with PAN NUMBER",
+            score=3,
+            rule_category="Identity",
+            entities=["PERSON", "PAN_NUMBER"],
+        ),
+        models.Rule(
+            rule_name="FI_CREDIT_CARD_1",
+            rule_description="Details of credit card which can launch fradulent credit card transaction",
+            score=8,
+            rule_category="Financial",
+            entities=["CREDIT_CARD", "CREDIT_CARD_CVV", "CREDIT_CARD_EXPIRY_DATE"],
+        ),
+        models.Rule(
+            rule_name="FI_CREDIT_CARD_2",
+            rule_description="Details of credit card which can launch fradulent credit card transaction",
+            score=10,
+            rule_category="Financial",
+            entities=[
+                "PERSON",
+                "CREDIT_CARD",
+                "CREDIT_CARD_CVV",
+                "CREDIT_CARD_EXPIRY_DATE",
+            ],
+        ),
+        models.Rule(
+            rule_name="FI_BANK_ACCOUNT_1",
+            rule_description="Exposure of Bank Account Details",
+            score=7,
+            rule_category="Category E",
+            entities=["BANK_ACCOUNT", "PERSON"],
+        ),
     ]
-
 
     # Insert seed data into the session
     try:
@@ -184,42 +223,62 @@ def read_rules(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     rules = crud.get_rules(db, skip=skip, limit=limit)
     return rules
 
+
 @app.put("/api/rule/{rule_id}", response_model=schemas.RuleResponse)
 def update_rule(rule_id: int, rule: schemas.RuleUpdate, db: Session = Depends(get_db)):
     print(f"Received rule: {rule.dict()}")
     print(f" The ID passed is {rule_id}")
     return crud.update_rule(db=db, rule_id=rule_id, rule=rule)
 
+
 @app.get("/api/rule_group_entity_map", response_model=List[schemas.RuleGroupEntityMap])
-def read_rule_group_entity_map(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+def read_rule_group_entity_map(
+    skip: int = 0, limit: int = 100, db: Session = Depends(get_db)
+):
     rule_group_entity_maps = crud.get_rule_group_entity_map(db, skip=skip, limit=limit)
     return rule_group_entity_maps
+
 
 @app.post("/api/case", response_model=schemas.Case)
 def create_case(case: schemas.CaseCreate, db: Session = Depends(get_db)):
     return crud.create_case(db, case)
 
+
 @app.get("/api/case", response_model=List[schemas.Case])
-def read_case(skip: int = 0, limit: int = 100, map: str = None, db: Session = Depends(get_db)):
+def read_case(
+    skip: int = 0, limit: int = 100, map: str = None, db: Session = Depends(get_db)
+):
     cases = crud.get_cases(db, skip, limit, map)
     return cases
+
 
 @app.post("/api/block", response_model=schemas.Block)
 def create_block(block: schemas.BlockCreate, db: Session = Depends(get_db)):
     return crud.create_block(db, block)
 
+
 @app.get("/api/block", response_model=List[schemas.Block])
-def read_block(skip: int = 0, limit: int = 100, map: str = None, db: Session = Depends(get_db)):
+def read_block(
+    skip: int = 0, limit: int = 100, map: str = None, db: Session = Depends(get_db)
+):
     blocks = crud.get_blocks(db, skip, limit, map)
     return blocks
+
 
 # Initialize router
 router = APIRouter()
 
-@app.get("/api/pii_identification_record", response_model=List[schemas.PIIIdentificationRecordBase])
-def read_pir(skip: int = 0, limit: int = 100, map: str = None, db: Session = Depends(get_db)):
+
+@app.get(
+    "/api/pii_identification_record",
+    response_model=List[schemas.PIIIdentificationRecordBase],
+)
+def read_pir(
+    skip: int = 0, limit: int = 100, map: str = None, db: Session = Depends(get_db)
+):
     pirs = crud.get_pir(db, skip, limit, map)
     return pirs
+
 
 def match_rule(entities_detected, rule_entities):
     """
@@ -246,6 +305,7 @@ def create_pii_identification_record(
         logger.error(f"Unexpected error: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
+
 @app.post("/api/block_rule_score", response_model=schemas.BlockRuleScoreCreate)
 def create_block_rule_score(
     score: schemas.BlockRuleScoreCreate, db: Session = Depends(get_db)
@@ -258,10 +318,14 @@ def create_block_rule_score(
         logging.error(f"Error creating block rule score: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
+
 @app.get("/api/block_rule_score", response_model=List[schemas.BlockRuleScore])
-def read_brs(skip: int = 0, limit: int = 100, map: str = None, db: Session = Depends(get_db)):
+def read_brs(
+    skip: int = 0, limit: int = 100, map: str = None, db: Session = Depends(get_db)
+):
     brs = crud.get_brs(db, skip, limit, map)
     return brs
+
 
 # Include the router in the FastAPI app
 app.include_router(router, prefix="/api")

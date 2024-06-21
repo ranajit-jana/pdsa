@@ -5,6 +5,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from urllib.parse import quote_plus
 import os
+
 load_dotenv(find_dotenv())
 # Retrieve database credentials from environment variables or configuration
 username = os.getenv("DB_USERNAME")
@@ -25,7 +26,9 @@ if not isinstance(password, str):
 encoded_password = quote_plus(password)
 
 # Database URL
-SQLALCHEMY_DATABASE_URL = f"postgresql://{username}:{encoded_password}@{hostname}/{database_name}"
+SQLALCHEMY_DATABASE_URL = (
+    f"postgresql://{username}:{encoded_password}@{hostname}/{database_name}"
+)
 
 # Create SQLAlchemy engine
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
