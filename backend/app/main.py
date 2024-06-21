@@ -29,7 +29,7 @@ app.add_middleware(
 models.Base.metadata.create_all(bind=engine)
 
 # Initialize logger
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 
@@ -336,7 +336,9 @@ def create_pii_identification_record(
     background_tasks: BackgroundTasks = None,
 ):
     logger.info(f"Incoming request: {record}")
+
     try:
+        print({key: record.dict()[key] for key in ["source", "entities_detected"]})
         db_record = crud.create_pii_identification_record(db, record)
         background_tasks.add_task(score_processing, db, db_record)
         return db_record
