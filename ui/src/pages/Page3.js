@@ -39,12 +39,12 @@ const Page3 = () => {
   }, [selectedCase]);
 
   const getScoreColor = (score) => {
-    if (score >= 1 && score <= 4) {
+    if (score >= 1 && score <= 3) {
       return '#000000'; // black
-    } else if (score >= 5 && score <= 7) {
-      return '#FF0000'; // red
+    } else if (score >= 4 && score <= 7) {
+      return '#e4951e'; // amber
     } else if (score >= 8 && score <= 10) {
-      return '#8B0000'; // dark red
+      return '#FF0000'; //  red
     }
     return '#000000'; // default color
   };
