@@ -25,7 +25,15 @@ const Navbar = () => {
   const [collapsed, setCollapsed] = useState(false);
   return (
     <Sider collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}>
-      <div style={{ display: 'flex', justifyContent: 'center', padding: '30px' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', padding: '10px' }}>
+        {collapsed ?
+          (<>
+            <img src="/logo.png" alt="REVA University Logo" style={{ maxWidth: '80%', height: '80%' }} />
+          </>)
+          :
+          (<>
+            <img src="/REVAUNIVERSITYLOGO.png" alt="REVA University Logo" style={{ maxWidth: '100%', height: 'auto' }} />
+          </>)}
       </div>
       <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline" items={items} />
     </Sider>
