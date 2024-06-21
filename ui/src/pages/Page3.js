@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Select, Table, Typography,Tag } from 'antd';
+import { Select, Table, Typography,Tag , Button} from 'antd';
 import axios from 'axios';
 import {
   getBlockRuleScores,
@@ -66,18 +66,21 @@ const Page3 = () => {
         </span>
       )
     },
-    { title: 'Rule Match', dataIndex: 'rules_match', key: 'rules_match' },
     {
       title: 'Rule Match',
       dataIndex: 'rules_match',
       key: 'rules_match',
-      render: rules_match => (
-        <>
-          {Array.isArray(rules_match) && rules_match.map(rule => (
-            <Tag key={rule}>{rule}</Tag>
-          ))}
-        </>
-      ),
+      render: rules_match => {
+        // Split the string into an array
+        const rulesArray = rules_match ? rules_match.split(',') : [];
+        return (
+          <>
+            {rulesArray.map(rule => (
+              <Tag key={rule} style={{ margin: '0 5px 5px 0' }}>{rule}</Tag>
+            ))}
+          </>
+        );
+      }
     },
   ];
 
