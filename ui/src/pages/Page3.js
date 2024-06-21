@@ -22,9 +22,7 @@ const Page3 = () => {
         const uniqueCaseNames = [...new Set(data.map(item => item.case_name))];
         setCaseNames(uniqueCaseNames);
   
-        // Calculate and display the case score total
-        const totalScore = data.reduce((sum, item) => sum + item.score, 0);
-        setCaseScoreTotal(totalScore);
+
       })
       .catch(error => console.error('Error fetching block_rule_scores:', error));
   }, []);
@@ -37,6 +35,9 @@ const Page3 = () => {
           const filteredData = data.filter(item => item.case_name === selectedCase);
           setBlocks(filteredData);
           setTotalBlocks(filteredData.length);
+        // Calculate and display the case score total
+        const totalScore = filteredData.reduce((sum, item) => sum + item.score, 0);
+        setCaseScoreTotal(totalScore);
         })
         .catch(error => console.error('Error fetching block_rule_scores:', error));
     }
