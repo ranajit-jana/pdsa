@@ -43,7 +43,7 @@ const Page3 = () => {
   }, [selectedCase]);  
 
   const columns = [
-    { title: 'Block', dataIndex: 'block_hash', key: 'block_hash' },
+    { title: 'Block', dataIndex: 'source', key: 'source' },
     { title: 'Score', dataIndex: 'score', key: 'score' },
     { title: 'Rule Match', dataIndex: 'rules_match', key: 'rules_match' },
   ];
