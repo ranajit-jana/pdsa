@@ -112,11 +112,32 @@ def seed_data():
     # Define your seed data for Rule
     seed_rules = [
         models.Rule(
+            rule_name="ID_IDENTITY_THEFT_3",
+            rule_description="Data collected can cause Identity Threats",
+            score=4,
+            rule_category="Identity",
+            entities=["PERSON", "MOTHERS_MAIDEN_NAME", "DATE_OF_BIRTH"],
+        ),
+        models.Rule(
             rule_name="ID_SOCIAL_ENGINEERING_1",
             rule_description="Data collected to launch Social Engineering Attack",
             score=3,
             rule_category="Identity",
-            entities=["PERSON", "MOTHERS_MAIDEN_NAME", "DATE_OF_BIRTH"],
+            entities=["PERSON", "PHONE_NUMBER", "EMAIL_ADDRESS"],
+        ),
+        models.Rule(
+            rule_name="ID_SOCIAL_ENGINEERING_2",
+            rule_description="Data collected to launch Social Engineering Attack",
+            score=3,
+            rule_category="Identity",
+            entities=["PERSON", "PHONE_NUMBER", "EMAIL_ADDRESS", "ADDRESS"],
+        ),
+        models.Rule(
+            rule_name="ID_SOCIAL_ENGINEERING_2",
+            rule_description="Data collected to launch Social Engineering Attack",
+            score=3,
+            rule_category="Identity",
+            entities=["PERSON", "PHONE_NUMBER", "EMAIL_ADDRESS"],
         ),
         models.Rule(
             rule_name="ID_IDENTITY_THEFT_1",
@@ -131,6 +152,27 @@ def seed_data():
             score=3,
             rule_category="Identity",
             entities=["PERSON", "PAN_NUMBER"],
+        ),
+        models.Rule(
+            rule_name="PR_PRIVACY_1",
+            rule_description="Privacy Concerns",
+            score=2,
+            rule_category="Identity",
+            entities=["PERSON", "ADDRESS"],
+        ),
+        models.Rule(
+            rule_name="PR_PRIVACY_2",
+            rule_description="Privacy Concerns",
+            score=2,
+            rule_category="Identity",
+            entities=["PERSON", "EMAIL_ADDRESS"],
+        ),
+        models.Rule(
+            rule_name="PR_PRIVACY_3",
+            rule_description="Privacy Concerns",
+            score=2,
+            rule_category="Identity",
+            entities=["PERSON", "PHONE_NUMBER"],
         ),
         models.Rule(
             rule_name="FI_CREDIT_CARD_1",
